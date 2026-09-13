@@ -224,3 +224,23 @@ footer { display: flex; justify-content: center; align-items: center; margin-top
   .arrow-face { fill: LinkText; stroke: LinkText; }
   .availability > span { background: CanvasText; }
 }
+
+/* Chinese labels retain the existing hand-drawn layout. */
+html:lang(zh-CN) .work-link { font-size: 72px; line-height: 1.4; }
+html:lang(zh-CN) .top-annotation { margin-bottom: 16px; }
+html:lang(zh-CN) .side-annotation { margin-top: 24px; }
+html:lang(zh-CN) .signature { flex-wrap: wrap; gap: 12px 20px; }
+html:lang(zh-CN) .doodle-annotation .bio { font-size: 16px; max-width: 320px; }
+html:lang(zh-CN) .availability { font-size: 14px; }
+@media (max-width: 1000px) { html:lang(zh-CN) .work-link { font-size: 54px; } }
+@media (max-width: 640px) {
+  html:lang(zh-CN) .work-link { font-size: 52px; }
+  html:lang(zh-CN) .sketchbook-link { font-size: 44px; }
+  html:lang(zh-CN) .doodle-annotation .role { font-size: 16px; }
+  html:lang(zh-CN) .profiles { display: flex; gap: 12px; }
+  html:lang(zh-CN) .profiles a { padding: 8px 12px; }
+}
+@media (max-width: 360px) {
+  html:lang(zh-CN) .work-link { font-size: 44px; }
+  html:lang(zh-CN) .sketchbook-link { font-size: 38px; }
+}

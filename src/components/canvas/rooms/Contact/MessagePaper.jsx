@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 const PAPER_WIDTH = 1.51; // Legacy ratio 1197/1340
 const PAPER_HEIGHT = 1.7;
-const FONT_PATH = '/fonts/CabinSketch-Regular.ttf';
+const FONT_PATH = '/fonts/PortfolioZh.ttf';
 
 // Helper: Interactive Text Field with Smooth Animation and Invisible Hitbox
 const InteractiveTextField = ({
@@ -153,8 +153,8 @@ const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || '';
 // Only these domains are allowed to submit the form.
 // Anyone cloning the repo and running on localhost will be silently blocked.
 const ALLOWED_ORIGINS = [
-    'itomdev.com',
-    'www.itomdev.com',
+    'libai-portfolio.example',
+    'www.libai-portfolio.example',
     'portfolio-itom.pages.dev',
 ];
 
@@ -215,23 +215,25 @@ const scoreWord = (word) => {
 
 // Main content analyzer — scores every word and computes an aggregate
 const analyzeContentAI = (text, isSubject = false) => {
-    if (!text || text.trim().length < (isSubject ? 2 : 3)) return { isSpam: true, reason: 'Message too short' };
+    if (!text || text.trim().length < (isSubject ? 2 : 3)) return { isSpam: true, reason: '内容太短' };
 
     const cleaned = text.trim();
+    // Chinese phrases do not use spaces or Latin vowel patterns.
+    if (/[\u4e00-\u9fff]/.test(cleaned)) return { isSpam: false };
 
     // Single-word messages under 15 chars without a space are suspicious (but completely normal for subjects)
     if (!isSubject && cleaned.length <= 15 && !cleaned.includes(' ')) {
         // Allow common short messages like "hello", "thanks", "cool", "nice", "hi there"
         const commonShort = /^(hi|hey|hello|thanks|thank you|cool|nice|ok|okay|yes|no|sup|yo|cheers|hej|cześć|dzięki|siema|elo)$/i;
         if (!commonShort.test(cleaned)) {
-            return { isSpam: true, reason: 'Too short to be a real message' };
+            return { isSpam: true, reason: '请补充留言内容' };
         }
     }
 
     const words = cleaned.split(/\s+/).filter(w => w.length > 0);
     const scorableWords = words.filter(w => w.length > 2 && /[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(w));
 
-    if (scorableWords.length === 0) return { isSpam: true, reason: 'No real words detected' };
+    if (scorableWords.length === 0) return { isSpam: true, reason: '请输入有效内容' };
 
     // Score each word
     const wordScores = scorableWords.map(w => scoreWord(w));
@@ -243,17 +245,17 @@ const analyzeContentAI = (text, isSubject = false) => {
 
     // VERDICT: If average score is very low, or majority of words are gibberish => spam
     if (avgScore < 0.2) {
-        return { isSpam: true, reason: 'Content appears to be gibberish' };
+        return { isSpam: true, reason: '内容无法识别' };
     }
     if (gibberishRatio >= 0.6 && scorableWords.length >= 2) {
-        return { isSpam: true, reason: 'Too many unrecognizable words' };
+        return { isSpam: true, reason: '存在较多无法识别的文字' };
     }
 
     // Global vowel check (backup for edge cases)
     const allAlpha = (cleaned.toLowerCase().match(/[a-ząćęłńóśźż]/g) || []);
     const allVowels = (cleaned.toLowerCase().match(/[aeiouyąęó]/g) || []);
     if (allAlpha.length > 8 && allVowels.length / allAlpha.length < 0.12) {
-        return { isSpam: true, reason: 'Suspicious character distribution' };
+        return { isSpam: true, reason: '内容格式异常' };
     }
 
     return { isSpam: false };
@@ -319,10 +321,10 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
     // Form validation
     const validateForm = () => {
         const newErrors = {};
-        if (!email.trim()) newErrors.email = 'Email required';
-        else if (!isValidEmail(email)) newErrors.email = 'Invalid email format';
-        if (!subject.trim()) newErrors.subject = 'Subject required';
-        if (!message.trim()) newErrors.message = 'Message required';
+        if (!email.trim()) newErrors.email = "请填写邮箱";
+        else if (!isValidEmail(email)) newErrors.email = "邮箱格式不正确";
+        if (!subject.trim()) newErrors.subject = "请填写主题";
+        if (!message.trim()) newErrors.message = "请填写留言";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -382,7 +384,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
             // --- 0. Rate Limiting (1 message per 30 min) ---
             const rateCheck = checkRateLimit();
             if (!rateCheck.allowed) {
-                setErrors({ message: `Please wait ${rateCheck.minutesLeft} min before sending again.` });
+                setErrors({ message: `请等待 ${rateCheck.minutesLeft} 分钟后再发送。` });
                 setIsSubmitting(false);
                 return;
             }
@@ -420,7 +422,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
             const messageAnalysis = analyzeContentAI(message, false);
 
             if (subjectAnalysis.isSpam || messageAnalysis.isSpam) {
-                setErrors({ message: 'Our AI flagged this as spam. Please write clearly.' });
+                setErrors({ message: "内容未通过检查，请修改后重试。" });
                 setIsSubmitting(false);
                 return;
             }
@@ -437,7 +439,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                     // Status 0 is NOERROR. If no MX records (type 15), domain can't receive mail.
                     // Status 3 is NXDOMAIN (domain doesn't exist at all).
                     if (dnsData.Status === 3 || (dnsData.Status === 0 && (!dnsData.Answer || !dnsData.Answer.some(a => a.type === 15)))) {
-                        setErrors({ email: 'Domain does not exist or cannot receive emails.' });
+                        setErrors({ email: "邮箱域名无效或无法接收邮件。" });
                         setIsSubmitting(false);
                         return;
                     }
@@ -454,7 +456,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                 },
                 body: JSON.stringify({
                     access_key: WEB3FORMS_KEY,
-                    from_name: 'Portfolio Contact',
+                    from_name: '作品集联系留言',
                     email: email,
                     subject: subject,
                     message: message
@@ -474,7 +476,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                 setSubject('');
                 formLoadedAt.current = Date.now(); // Reset timing trap
             } else {
-                throw new Error(result.message || 'Failed to send');
+                throw new Error(result.message || "发送失败");
             }
         } catch (error) {
             // console.error('❌ Send failed:', error);
@@ -561,9 +563,9 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
         <group ref={groupRef} position={position}>
             {/* Hidden HTML inputs */}
             <Html position={[0, 0, 0]} style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}>
-                <textarea ref={hiddenInputRef} value={message} onChange={handleMessageInput} onBlur={handleBlur} aria-label="Message" style={{ pointerEvents: 'auto' }} />
-                <input ref={emailInputRef} type="email" value={email} onChange={handleEmailInput} onBlur={handleBlur} aria-label="Email" style={{ pointerEvents: 'auto' }} />
-                <input ref={subjectInputRef} type="text" value={subject} onChange={handleSubjectInput} onBlur={handleBlur} aria-label="Subject" style={{ pointerEvents: 'auto' }} />
+                <textarea ref={hiddenInputRef} value={message} onChange={handleMessageInput} onBlur={handleBlur} aria-label="留言" style={{ pointerEvents: 'auto' }} />
+                <input ref={emailInputRef} type="email" value={email} onChange={handleEmailInput} onBlur={handleBlur} aria-label="邮箱" style={{ pointerEvents: 'auto' }} />
+                <input ref={subjectInputRef} type="text" value={subject} onChange={handleSubjectInput} onBlur={handleBlur} aria-label="主题" style={{ pointerEvents: 'auto' }} />
                 <input type="checkbox" name="botcheck" checked={botcheck} onChange={handleBotcheckInput} style={{ pointerEvents: 'auto' }} />
             </Html>
 
@@ -594,7 +596,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                 <InteractiveTextField
                     isActive={activeField === 'email'}
                     value={email}
-                    placeholder="email..."
+                    placeholder="填写邮箱"
                     cursor={cursorVisible ? '|' : ' '}
                     onClick={() => { setActiveField('email'); setTimeout(() => emailInputRef.current?.focus(), 10); }}
                     // Layout
@@ -612,7 +614,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                 <InteractiveTextField
                     isActive={activeField === 'subject'}
                     value={subject}
-                    placeholder="subject..."
+                    placeholder="填写主题"
                     cursor={cursorVisible ? '|' : ' '}
                     onClick={() => { setActiveField('subject'); setTimeout(() => subjectInputRef.current?.focus(), 10); }}
                     // Layout
@@ -630,7 +632,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                 <InteractiveTextField
                     isActive={activeField === 'message'}
                     value={formattedMessage}
-                    placeholder="message..."
+                    placeholder="填写留言内容"
                     cursor={cursorVisible ? '|' : ' '}
                     onClick={() => { setActiveField('message'); setTimeout(() => hiddenInputRef.current?.focus(), 10); }}
                     // Layout
@@ -653,7 +655,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                     onClick={handleButtonClick}
                     position={[0, 0.005, 0.68]}
                     size={[0.5, 0.13]}
-                    text={isSubmitting ? 'SENDING...' : 'SEND'}
+                    text={isSubmitting ? "正在发送…" : "发送"}
                     fontPath={FONT_PATH}
                 />
 
@@ -668,7 +670,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                         anchorX="center"
                         anchorY="middle"
                     >
-                        {errors.email || errors.subject || errors.message || 'Please fill all fields'}
+                        {errors.email || errors.subject || errors.message || "请填写完整信息"}
                     </Text>
                 )}
 
@@ -683,7 +685,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                         anchorX="center"
                         anchorY="middle"
                     >
-                        Message sent! ✓
+                        留言已发送
                     </Text>
                 )}
 
@@ -698,7 +700,7 @@ const MessagePaper = ({ position = [0, 0.05, 2], onSend }) => {
                         anchorX="center"
                         anchorY="middle"
                     >
-                        Failed to send. Try again.
+                        发送失败，请重试。
                     </Text>
                 )}
             </>

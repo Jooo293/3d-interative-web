@@ -179,7 +179,7 @@ const Door = ({
                 </mesh>
 
                 {/* Label text (front layer) */}
-                <Text
+                <Text font="/fonts/PortfolioZh.ttf"
                     position={[0, 0, 0.01]}
                     fontSize={0.12}
                     color="#1a1a1a"
@@ -192,7 +192,7 @@ const Door = ({
                 </Text>
 
                 {/* Arrow pointing down */}
-                <Text
+                <Text font="/fonts/PortfolioZh.ttf"
                     position={[0, -0.2, 0.01]}
                     fontSize={0.15}
                     color="#39FF14"

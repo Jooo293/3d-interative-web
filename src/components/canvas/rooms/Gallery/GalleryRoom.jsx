@@ -13,6 +13,9 @@ import GalleryClouds from './GalleryClouds';
 import { useAudio } from '../../../../context/AudioManager';
 import { usePaintMaterial } from './usePaintMaterial';
 import { useGalleryProjects } from '../../../../hooks/useSanityData';
+import { ADDED_GALLERY_PROJECTS } from '../../../../config/galleryProjects';
+import { PORTFOLIO_DOCUMENTS } from '../../../../config/portfolioDocuments';
+import { HEXACO_MINI_PROGRAM } from '../../../../config/miniPrograms';
 
 // Reusable Vector3 to avoid allocations in useFrame
 const _tempScale = new THREE.Vector3();
@@ -36,44 +39,47 @@ export const GALLERY_INTERACTION_AUDIO_SETTINGS = {
 // Define the unique projects and their textures
 const FALLBACK_PROJECTS = [
     {
-        id: 'monetune',
-        title: 'MONETUNE',
-        front: '/textures/gallery/monetuneprzod.webp',
-        painted: '/textures/gallery/monetuneprzod_painted.webp',
-        url: 'https://monetune.pl',
-        description: 'MoneTune is a step-by-step blueprint that teaches beginners how to generate passive income using AI-created music. Without any musical skills, you will learn how to easily produce professional tracks, publish them on platforms like Spotify, and monetize your digital assets.',
+        id: 'hexaco-mini-program',
+        miniProgram: HEXACO_MINI_PROGRAM,
+        title: "六因素人格镜",
+        front: '/textures/gallery/portfolio/hexaco-mini-program.webp',
+        painted: '/textures/gallery/portfolio/hexaco-mini-program-painted.webp',
+        url: '#',
+        description: "基于 HEXACO 人格模型，借助 AI 工具独立完成微信小程序的设计、开发与上线。",
         techStack: ['/textures/gallery/wordpresslogo.webp', '/textures/gallery/elementorlogo.webp', '/textures/gallery/phplogo.webp', '/textures/gallery/csslogo.webp']
     },
     {
-        id: 'timber',
-        title: 'TIMBERKITTY',
+        id: 'hr-operations',
+        documents: [PORTFOLIO_DOCUMENTS.educationInternship],
+        title: "人事实习实践",
         front: '/textures/gallery/timberkittyprzod.webp',
         painted: '/textures/gallery/timberkittyprzod_painted.webp',
-        url: 'https://timberkitty.netlify.app',
-        description: 'TimberKitty is an addictive, free-to-play browser arcade game built in pure JavaScript. Players control a lumberjack cat to chop wood, save birds, complete daily missions, and compete on global leaderboards.',
+        url: '#',
+        description: "在人事助理实习中，参与档案管理、薪酬福利材料审核、员工服务及跨科室协作。",
         techStack: ['/textures/gallery/jslogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/firebaselogo.webp']
     },
     {
-        id: 'young',
-        title: 'YOUNG MULTI',
-        front: '/textures/gallery/youngmultiprzod.webp',
-        painted: '/textures/gallery/youngmultiprzod_painted.webp',
-        url: 'https://young-multi-strona.netlify.app',
-        description: 'A sleek, modern concept website dedicated to the Polish rapper and creator Young Multi. It serves as a promotional landing page designed to highlight his personal brand, music, and online presence.',
+        id: 'campus-food-project',
+        documents: [PORTFOLIO_DOCUMENTS.campusPlan],
+        title: "悦味之家",
+        front: '/textures/gallery/portfolio/campus-food-project.webp',
+        painted: '/textures/gallery/portfolio/campus-food-project-painted.webp',
+        url: '#',
+        description: "高校餐饮休娱一体化运营方案，涵盖 SWOT 分析、组织架构、招聘流程及十个核心岗位设计。",
         techStack: ['/textures/gallery/reactlogo.webp', '/textures/gallery/tailwindlogo.webp', '/textures/gallery/htmllogo.webp', '/textures/gallery/netlifylogo.webp']
     },
     {
-        id: 'bio',
-        title: 'BIO',
-        front: '/textures/gallery/bioprzod.webp',
-        painted: '/textures/gallery/bioprzod_painted.webp',
-        url: 'https://tomkingbio.netlify.app',
-        description: 'A fast, modern personal bio page serving as a central hub for my digital footprint. It showcases my latest coding projects, web development services, YouTube videos, and recommended music artists.',
+        id: 'quantitative-research',
+        documents: [PORTFOLIO_DOCUMENTS.thesis],
+        title: "毕业论文实证研究",
+        front: '/textures/gallery/portfolio/quantitative-research.webp',
+        painted: '/textures/gallery/portfolio/quantitative-research-painted.webp',
+        url: '#',
+        description: "运用 Stata 开展实证研究，完成裁决书编码、样本整理、残差分析与匹配度检验。",
         techStack: ['/textures/gallery/htmllogo.webp', '/textures/gallery/csslogo.webp', '/textures/gallery/jslogo.webp', '/textures/gallery/netlifylogo.webp']
     },
 ];
 
-const PROJECT_COUNT = 10; // Keep the count for the infinite scroll feel
 const GAP = 2.5;
 
 // Zmień te wartości aby dopasować proporcje ptaka (legacy ratio 1.41)
@@ -210,7 +216,11 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
 
     // Pobieranie danych z Sanity.io (fallback do starych danych)
     const sanityProjects = useGalleryProjects();
-    const activeProjects = sanityProjects || FALLBACK_PROJECTS;
+    const activeProjects = useMemo(() => {
+        const existing = sanityProjects?.length ? sanityProjects : FALLBACK_PROJECTS;
+        return [...existing, ...ADDED_GALLERY_PROJECTS.filter(p => !existing.some(item => item.id === p.id))];
+    }, [sanityProjects]);
+    const projectCount = Math.max(8, activeProjects.length);
 
     useEffect(() => {
         const mq = window.matchMedia('(hover: hover)');
@@ -250,7 +260,7 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
 
     // Construct the full list of projects (repeated) with textures attached
     const projects = useMemo(() => {
-        return Array.from({ length: PROJECT_COUNT }).map((_, i) => {
+        return Array.from({ length: projectCount }).map((_, i) => {
             const projectIndex = i % activeProjects.length;
             const projectData = activeProjects[projectIndex];
 
@@ -291,11 +301,11 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 techStack: techStack
             };
         });
-    }, [projectTextures, backTextureRaw, overlayTextureRaw]);
+    }, [activeProjects, projectCount, projectTextures, paintedTextures, canHover, backTextureRaw, overlayTextureRaw]);
 
     // Function to scroll to a specific project index
     const scrollToIndex = (index, onComplete) => {
-        const totalWidth = PROJECT_COUNT * GAP;
+        const totalWidth = projectCount * GAP;
         const targetScrollValue = index * GAP;
         const currentScrollValue = currentScroll.current;
 
@@ -513,7 +523,7 @@ const GalleryRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                             ref={el => cardRefs.current[i] = el}
                             project={project}
                             clothespinTexture={clothespinTexture}
-                            total={PROJECT_COUNT}
+                            total={projectCount}
                             currentScroll={currentScroll}
                             materials={materials}
                             curve={curve}
@@ -687,7 +697,8 @@ const FlyingBird = ({ texture }) => {
 };
 
 // Sub-component for individual project cards
-const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, currentScroll, materials, curve, isSelected, scrollToIndex, onClick, isMobile, isTransitioning, paintProgress, roomOrigin }, ref) => {
+const ProjectCard = memo(forwardRef(({ index, project, total, clothespinTexture, currentScroll, materials, curve, isSelected, scrollToIndex, onClick, isMobile, isTransitioning, paintProgress, roomOrigin }, ref) => {
+    const { openOverlay } = useScene();
     const cardRef = useRef();
     const paperRef = useRef(); // Ref for the moving part (Paper)
     const materialRef = useRef();
@@ -1052,7 +1063,7 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
         // Skip position updates ONLY during flip animation, NOT during scroll
         if (isAnimating || isSelected) return;
 
-        const totalWidth = PROJECT_COUNT * GAP; // GAP is available in scope because we are in the file where GAP is defined
+        const totalWidth = total * GAP;
         let rawX = (index * GAP) - currentScroll.current;
         const halfWidth = totalWidth / 2;
         let displayX = ((rawX + halfWidth) % totalWidth + totalWidth) % totalWidth - halfWidth;
@@ -1164,12 +1175,12 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         position={[0, 0, 0.01]}
                         fontSize={0.11}
                         color={btnHovered ? "#333333" : "#1c1c1c"}
-                        font="/fonts/CabinSketch-Bold.ttf"
+                        font="/fonts/PortfolioZh.ttf"
                         anchorX="center"
                         anchorY="middle"
                         fillOpacity={0} // Start hidden
                     >
-                        OPEN PROJECT
+                        查看项目
                     </Text>
 
                     {/* Warstwa 3: Niewidoczny hit-area pokrywający cały przycisk - łapie WSZYSTKIE eventy */}
@@ -1178,7 +1189,18 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         onClick={(e) => {
                             if (isSelected && !isTransitioning) {
                                 e.stopPropagation();
-                                window.open(project.url, '_blank');
+                                if (project.url && project.url !== '#') {
+                                    window.open(project.url, '_blank', 'noopener,noreferrer');
+                                } else {
+                                    openOverlay({
+                                        id: project.id,
+                                        title: project.title,
+                                        documents: project.documents,
+                                        miniProgram: project.miniProgram,
+                                        layout: 'portfolio_sections',
+                                        sections: project.sections || [{ title: '项目介绍', description: project.description }],
+                                    });
+                                }
                             }
                         }}
                         onPointerEnter={(e) => {
@@ -1210,12 +1232,12 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         position={[0, 0.28, 0.01]} // Względem środka detailsGroupRef, wyżej
                         fontSize={0.10}
                         color="#1c1c1c"
-                        font="/fonts/CabinSketch-Bold.ttf"
+                        font="/fonts/PortfolioZh.ttf"
                         anchorX="center"
                         anchorY="middle"
                         fillOpacity={0} // Start hidden
                     >
-                        PROJECT DETAILS:
+                        项目介绍
                     </Text>
 
                     <Text
@@ -1223,21 +1245,23 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         position={[0, 0.2, 0.01]} // Poniżej nagłówka
                         fontSize={0.06}
                         color="#333333"
-                        font="/fonts/CabinSketch-Bold.ttf"
+                        font="/fonts/PortfolioZh.ttf"
                         anchorX="center"
                         anchorY="top"
-                        maxWidth={1.1} // Maksymalna szerokość zanim zacznie łamać linie
+                        maxWidth={1.0}
+                        overflowWrap="break-word"
                         lineHeight={1.4}
                         textAlign="center"
                         fillOpacity={0} // Start hidden
                     >
-                        {project.description || "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco."}
+                        {project.description || "项目资料正在整理中。"}
                     </Text>
                 </group>
 
                 {/* === SEKCJA TECH STACK NA PLECACH KARTKI === */}
                 <group
                     ref={techStackGroupRef}
+                    visible={project.techStack.length > 0}
                     position={[0, 0.30, 0]} // Pomiędzy Project Details a przyciskiem Open Project
                     rotation={[Math.PI, 0, 0]}
                 >
@@ -1246,12 +1270,12 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                         position={[0, 0.15, 0.01]}
                         fontSize={0.08}
                         color="#1c1c1c"
-                        font="/fonts/CabinSketch-Bold.ttf"
+                        font="/fonts/PortfolioZh.ttf"
                         anchorX="center"
                         anchorY="middle"
                         fillOpacity={0} // Start hidden
                     >
-                        TECH STACK
+                        使用工具
                     </Text>
 
                     {/* Kontener na loga układane poziomo */}
@@ -1285,9 +1309,11 @@ const ProjectCard = memo(forwardRef(({ index, project, clothespinTexture, curren
                 <Text
                     ref={textRef}
                     position={[0, 0.7, 0]} // Tylko dwa pierwsze parametry [X, Y] mają tutaj znaczenie
-                    fontSize={0.20}
+                    fontSize={0.13}
+                    maxWidth={1.1}
+                    textAlign="center"
                     color="#1c1c1c"
-                    font="/fonts/CabinSketch-Bold.ttf"
+                    font="/fonts/PortfolioZh.ttf"
                     anchorX="center"
                     anchorY="middle"
                     fillOpacity={0} // Start hidden

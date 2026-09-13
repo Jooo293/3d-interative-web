@@ -1,5 +1,7 @@
 import { useScene } from '../../context/SceneContext';
-import { useGalleryProjects, useStudioContent, useAwards } from '../../hooks/useSanityData';
+import { useGalleryProjects, useAwards } from '../../hooks/useSanityData';
+import { CONTENT_DATA, PLATFORM_CONFIG } from '../canvas/rooms/Studio/contentData';
+import { ADDED_GALLERY_PROJECTS } from '../../config/galleryProjects';
 import '../../styles/ScreenReaderOverlay.scss';
 
 /**
@@ -10,51 +12,52 @@ import '../../styles/ScreenReaderOverlay.scss';
  * Visually hidden via .sr-only but fully accessible to assistive tech.
  */
 const ScreenReaderOverlay = () => {
-    const { hasEntered, isInRoom, currentRoom, teleportTo, requestExit } = useScene();
+    const { hasEntered, isInRoom, currentRoom, teleportTo, requestExit, openOverlay } = useScene();
     
     // Pobieranie danych do wygenerowania niewidocznego HTML-a dla SEO / robotów
-    const projects = useGalleryProjects();
-    const studio = useStudioContent();
+    const remoteProjects = useGalleryProjects();
+    const projects = [...(remoteProjects || []), ...ADDED_GALLERY_PROJECTS.filter(p => !remoteProjects?.some(item => item.id === p.id))];
+    const studio = CONTENT_DATA;
     const awards = useAwards();
 
     return (
-        <div className="sr-overlay" role="complementary" aria-label="Accessible navigation for 3D portfolio">
+        <div className="sr-overlay" role="complementary" aria-label="3D 作品集无障碍导航">
             {/* Skip to content link */}
             <a href="#sr-main-nav" className="sr-only sr-focusable">
-                Skip to accessible navigation
+                跳至无障碍导航
             </a>
 
             {/* Main accessible navigation */}
-            <nav id="sr-main-nav" className="sr-only" aria-label="Portfolio rooms">
-                <h1>ITom — Creative Developer Portfolio</h1>
-                <h2>Portfolio Navigation</h2>
+            <nav id="sr-main-nav" className="sr-only" aria-label="作品集房间">
+                <h1>李白的人力资源与行政管理作品集</h1>
+                <h2>作品集导航</h2>
 
                 {!hasEntered && (
-                    <p>Welcome to ITom's interactive 3D portfolio. Click or press Enter on the doors to enter.</p>
+                    <p>欢迎来到李白的互动作品集。工作地点：华南师范大学。</p>
                 )}
 
                 {hasEntered && !isInRoom && (
                     <>
-                        <p>You are in the corridor. Choose a room to explore:</p>
+                    <p>你现在位于走廊，请选择一个房间继续浏览：</p>
                         <ul>
                             <li>
                                 <button onClick={() => teleportTo('about')} type="button">
-                                    About — My story, skills, and journey
+                                    关于我 — 个人简介、经历与技能
                                 </button>
                             </li>
                             <li>
                                 <button onClick={() => teleportTo('gallery')} type="button">
-                                    The Gallery — My projects and work
+                                    项目展示 — 研究与项目成果
                                 </button>
                             </li>
                             <li>
                                 <button onClick={() => teleportTo('contact')} type="button">
-                                    Contact — Get in touch with me
+                                    联系我 — 沟通职位与合作机会
                                 </button>
                             </li>
                             <li>
                                 <button onClick={() => teleportTo('studio')} type="button">
-                                    The Studio — Technologies and experience
+                                    技能工作室 — 方法、工具与能力
                                 </button>
                             </li>
                         </ul>
@@ -64,33 +67,33 @@ const ScreenReaderOverlay = () => {
                 {hasEntered && isInRoom && (
                     <>
                         <p>
-                            You are in the {currentRoom === 'about' ? 'About' :
-                                currentRoom === 'gallery' ? 'Gallery' :
-                                    currentRoom === 'contact' ? 'Contact' :
-                                        currentRoom === 'studio' ? 'Studio' : currentRoom} room.
+                            当前位置： {currentRoom === 'about' ? "关于我" :
+                                currentRoom === 'gallery' ? "项目展示" :
+                                    currentRoom === 'contact' ? "联系我" :
+                                        currentRoom === 'studio' ? "技能工作室" : currentRoom} 房间。
                         </p>
                         <button onClick={requestExit} type="button">
-                            Go back to corridor
+                            返回走廊
                         </button>
 
                         {/* Room-specific content descriptions */}
                         {currentRoom === 'about' && (
-                            <div aria-label="About room content">
-                                <h3>About Me</h3>
-                                <p>This room contains my personal story, awards, journey milestones, and technology skills displayed as interactive balloons.</p>
+                            <div aria-label="关于我内容">
+                                <h3>关于李白</h3>
+                                <p>我叫李白，关注人事管理与行政服务，擅长档案整理、薪酬福利材料审核和数据分析。希望以耐心、条理和细致的沟通，让日常工作更加顺畅。</p>
                                 
                                 {awards && (
                                     <section>
-                                        <h4>My Awards</h4>
+                                        <h4>荣誉成果</h4>
                                         <ul>
                                             {awards.sotd && awards.sotd.items && awards.sotd.items.map((a, i) => (
-                                                <li key={i}>{a.label} - {a.date} {a.url && <a href={a.url}>View</a>}</li>
+                                                <li key={i}>{a.label} - {a.date} {a.url && <a href={a.url}>查看</a>}</li>
                                             ))}
                                             {awards.sotm && awards.sotm.items && awards.sotm.items.map((a, i) => (
-                                                <li key={i}>{a.label} - {a.date} {a.url && <a href={a.url}>View</a>}</li>
+                                                <li key={i}>{a.label} - {a.date} {a.url && <a href={a.url}>查看</a>}</li>
                                             ))}
                                             {awards.other && awards.other.items && awards.other.items.map((a, i) => (
-                                                <li key={i}>{a.label} - {a.date} {a.url && <a href={a.url}>View</a>}</li>
+                                                <li key={i}>{a.label} - {a.date} {a.url && <a href={a.url}>查看</a>}</li>
                                             ))}
                                         </ul>
                                     </section>
@@ -98,9 +101,9 @@ const ScreenReaderOverlay = () => {
                             </div>
                         )}
                         {currentRoom === 'gallery' && (
-                            <div aria-label="Gallery room content">
-                                <h3>My Projects</h3>
-                                <p>Browse through my portfolio projects displayed on paper cards. Click on a project card to see details and visit the live site.</p>
+                            <div aria-label="项目展示内容">
+                                <h3>项目与研究</h3>
+                                <p>这里记录人事实践、课题研究、量化分析与六因素人格镜小程序等经历。</p>
                                 
                                 {projects && projects.length > 0 && (
                                     <ul>
@@ -108,7 +111,7 @@ const ScreenReaderOverlay = () => {
                                             <li key={i}>
                                                 <h4>{p.title}</h4>
                                                 <p>{p.description}</p>
-                                                {p.url && <a href={p.url}>Visit {p.title}</a>}
+                                                {p.url && p.url !== '#' ? <a href={p.url}>查看 {p.title}</a> : <button type="button" onClick={() => openOverlay({ ...p, layout: 'portfolio_sections', sections: p.sections || [{ title: '项目介绍', description: p.description }] })}>查看{p.title}</button>}
                                             </li>
                                         ))}
                                     </ul>
@@ -116,23 +119,30 @@ const ScreenReaderOverlay = () => {
                             </div>
                         )}
                         {currentRoom === 'contact' && (
-                            <div aria-label="Contact room content">
-                                <h3>Contact Me</h3>
-                                <p>Find my social media links displayed as floating barrels. Click to visit my profiles on LinkedIn, GitHub, and other platforms.</p>
+                            <div aria-label="联系信息">
+                                <h3>联系李白</h3>
+                                <ul>
+                                    <li><a href="mailto:2346794652@qq.com">邮件：2346794652@qq.com</a></li>
+                                    <li><a href="https://www.douyin.com/search/NBA_Official?type=user" target="_blank" rel="noopener noreferrer">抖音：搜索 NBA_Official</a></li>
+                                    <li><a href="https://space.bilibili.com/1683463886" target="_blank" rel="noopener noreferrer">B站：UID 1683463886</a></li>
+                                    <li><a href="https://x.com/NASA" target="_blank" rel="noopener noreferrer">推特：@NASA</a></li>
+                                    <li><a href="https://www.youtube.com/@hasbropulse" target="_blank" rel="noopener noreferrer">YouTube：@hasbropulse</a></li>
+                                </ul>
                             </div>
                         )}
                         {currentRoom === 'studio' && (
-                            <div aria-label="Studio room content">
-                                <h3>The Studio</h3>
-                                <p>Explore my experience and skills on rotating monitors. Click a monitor to read detailed information about my work.</p>
+                            <div aria-label="技能工作室内容">
+                                <h3>技能工作室</h3>
+                                <p>研究、电影海报、个人手绘、数字项目与 Lyria 音乐。</p>
 
                                 {studio && studio.length > 0 && (
                                     <ul>
                                         {studio.map((s, i) => (
                                             <li key={i}>
-                                                <h4>{s.title} ({s.platform})</h4>
+                                                <h4>{s.title} ({PLATFORM_CONFIG[s.platform]?.label})</h4>
                                                 <p>{s.description}</p>
-                                                {s.url && <a href={s.url}>View content</a>}
+                                                {s.url && <a href={s.url}>查看内容</a>}
+                                                <button type="button" onClick={() => openOverlay(s)}>查看{s.title}</button>
                                             </li>
                                         ))}
                                     </ul>
@@ -141,19 +151,19 @@ const ScreenReaderOverlay = () => {
                         )}
 
                         {/* Quick navigation to other rooms */}
-                        <h3>Quick Navigation</h3>
+                        <h3>快速导航</h3>
                         <ul>
                             {currentRoom !== 'about' && (
-                                <li><button onClick={() => teleportTo('about')} type="button">Go to About</button></li>
+                                <li><button onClick={() => teleportTo('about')} type="button">前往关于我</button></li>
                             )}
                             {currentRoom !== 'gallery' && (
-                                <li><button onClick={() => teleportTo('gallery')} type="button">Go to Gallery</button></li>
+                                <li><button onClick={() => teleportTo('gallery')} type="button">前往项目展示</button></li>
                             )}
                             {currentRoom !== 'contact' && (
-                                <li><button onClick={() => teleportTo('contact')} type="button">Go to Contact</button></li>
+                                <li><button onClick={() => teleportTo('contact')} type="button">前往联系我</button></li>
                             )}
                             {currentRoom !== 'studio' && (
-                                <li><button onClick={() => teleportTo('studio')} type="button">Go to Studio</button></li>
+                                <li><button onClick={() => teleportTo('studio')} type="button">前往技能工作室</button></li>
                             )}
                         </ul>
                     </>
@@ -162,7 +172,7 @@ const ScreenReaderOverlay = () => {
 
             {/* Live region for state changes */}
             <div aria-live="polite" aria-atomic="true" className="sr-only">
-                {isInRoom && `Entered ${currentRoom} room`}
+                {isInRoom && `已进入${({about: "关于我", gallery: "项目展示", contact: "联系我", studio: "技能工作室"})[currentRoom] || ""}房间`}
             </div>
         </div>
     );

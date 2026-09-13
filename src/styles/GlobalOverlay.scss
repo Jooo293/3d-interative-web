@@ -267,3 +267,70 @@
         }
     }
 }
+.portfolio-result-card {
+    .portfolio-result-content.has-artwork {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+        @media (max-width: 767px) { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    }
+
+    .portfolio-artwork {
+        margin: 0;
+        min-width: 0;
+        img { display: block; width: 100%; max-height: 52vh; object-fit: contain; }
+        figcaption { margin-top: 12px; text-align: center; }
+    }
+
+    .portfolio-result-content a { color: #315765; text-underline-offset: 4px; }
+
+    .portfolio-media-player {
+        margin-bottom: 16px;
+        video { display: block; width: min(100%, 42vh, 420px); height: auto; aspect-ratio: 1; margin: 0 auto; object-fit: contain; background: #151719; }
+        > a { display: inline-flex; align-items: center; min-height: 44px; }
+    }
+
+    .portfolio-mini-program {
+        margin: 16px 0 0;
+        text-align: center;
+        img { display: block; width: min(100%, 260px); height: auto; aspect-ratio: 1; object-fit: contain; margin: 0 auto; background: white; }
+        figcaption { display: flex; flex-direction: column; align-items: center; margin-top: 8px; font-size: 16px; line-height: 1.6; }
+        figcaption a { display: inline-flex; align-items: center; min-height: 44px; }
+    }
+
+    ul.portfolio-document-links {
+        list-style: none;
+        margin: 1rem 0 0;
+        padding: 0;
+        li { border-top: 1px solid #c3c9c5; padding: 12px 0; font-size: 16px; line-height: 1.6; }
+        .portfolio-document-actions { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 4px; }
+        a { display: inline-flex; align-items: center; min-height: 44px; }
+    }
+
+    .portfolio-result-content {
+        min-height: 0;
+        overflow-y: auto;
+        max-height: 60vh;
+        padding: 0 0.5rem 0.5rem;
+        font-family: 'Portfolio Zh', 'Microsoft YaHei', sans-serif;
+        overflow-wrap: anywhere;
+    }
+
+    .portfolio-result-icon {
+        display: block;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 1rem;
+    }
+
+    .portfolio-result-section {
+        padding: 1rem 0;
+        border-top: 1px solid #c3c9c5;
+
+        h3 { margin: 0 0 0.75rem; font-size: 20px; line-height: 1.5; }
+        p, li { font-size: 16px; line-height: 1.8; color: #303733; }
+        p { margin: 0 0 0.75rem; }
+        ul { margin: 0; padding-left: 1.3rem; }
+    }
+}

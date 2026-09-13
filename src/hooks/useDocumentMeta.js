@@ -12,28 +12,28 @@ import { useScene } from '../context/SceneContext';
 const ROOM_META = {
     null: {
         path: '/',
-        title: 'ITom — Creative 3D Portfolio',
-        description: 'Interactive 3D developer portfolio by Tomasz "ITom" Szmajda. Explore WebGL experiments, React projects & GSAP animations in a hand-drawn gallery.',
+        title: '李白 · 互动式 3D 作品集',
+        description: "李白的个人作品集，展示人事管理、行政服务、研究分析与数字实践。工作地点：华南师范大学。",
     },
     about: {
         path: '/about',
-        title: 'About Me — ITom Portfolio',
-        description: 'Learn about Tomasz "ITom" Szmajda — a creative frontend developer specializing in 3D web experiences, React, Three.js, and GSAP animations.',
+        title: "关于我 · 李白作品集",
+        description: "了解李白在人事档案、薪酬福利材料审核及员工服务方面的经历与能力。",
     },
     gallery: {
         path: '/gallery',
-        title: 'Gallery & Projects — ITom Portfolio',
-        description: 'Browse the interactive 3D gallery of web development projects by ITom. Each project is displayed as a hand-drawn card you can flip and explore.',
+        title: "项目展示 · 李白作品集",
+        description: "浏览李白的课题研究、数据分析、人事管理与数字项目。",
     },
     studio: {
         path: '/studio',
-        title: 'The Studio — ITom Portfolio',
-        description: 'Explore ITom\'s content studio — YouTube videos, blog posts, and TikToks displayed on floating monitors in an immersive 3D space.',
+        title: "技能工作室 · 李白作品集",
+        description: "了解李白的技能与工作方法，包括 Excel、SPSS、Stata、研究写作及数字工具。",
     },
     contact: {
         path: '/contact',
-        title: 'Contact — ITom Portfolio',
-        description: 'Get in touch with Tomasz "ITom" Szmajda. Find social media links and contact information in this interactive 3D contact room.',
+        title: "联系我 · 李白作品集",
+        description: "与李白交流人力资源、行政管理、研究与数据分析相关机会。",
     },
 };
 
@@ -82,12 +82,12 @@ export function useDocumentMeta() {
         if (ogDesc) ogDesc.setAttribute('content', meta.description);
 
         const ogUrl = document.querySelector('meta[property="og:url"]');
-        if (ogUrl) ogUrl.setAttribute('content', `https://itomdev.com${meta.path}`);
+        if (ogUrl) ogUrl.setAttribute('content', `${window.location.origin}${meta.path}`);
 
         // Update canonical link to ensure virtual routes are correctly indexable as separate pages
         const canonicalTag = document.querySelector('link[rel="canonical"]');
         if (canonicalTag) {
-            canonicalTag.setAttribute('href', `https://itomdev.com${meta.path}`);
+            canonicalTag.setAttribute('href', `${window.location.origin}${meta.path}`);
         }
 
         // Push to browser history (only if not handling a popstate event and room actually changed)

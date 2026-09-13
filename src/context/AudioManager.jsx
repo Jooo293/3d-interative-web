@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import { suspendBackgroundMusic } from '../utils/audioManager';
 
 const AudioContext = createContext({
     isMuted: false,
@@ -8,6 +9,8 @@ const AudioContext = createContext({
     audioEnabled: false,
     globalVolume: 0.5,
     setGlobalVolume: () => { },
+    mediaPlaying: false,
+    setMediaPlaying: () => { },
 });
 
 export const useAudio = () => useContext(AudioContext);
@@ -26,6 +29,10 @@ export const AudioProvider = ({ children }) => {
     });
 
     const [audioEnabled, setAudioEnabled] = useState(false);
+    const [mediaPlaying, setMediaPlaying] = useState(false);
+    useEffect(() => {
+        if (mediaPlaying) return suspendBackgroundMusic();
+    }, [mediaPlaying]);
 
     // Track active sounds to stop them later
     const activeSounds = useRef({});
@@ -146,7 +153,9 @@ export const AudioProvider = ({ children }) => {
             setGlobalVolume: enhancedSetGlobalVolume,
             play,
             enableAudio,
-            audioEnabled
+            audioEnabled,
+            mediaPlaying,
+            setMediaPlaying
         }}>
             {children}
         </AudioContext.Provider>

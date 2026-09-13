@@ -26,9 +26,9 @@ const tempEuler = new THREE.Euler();
 const tempQuat = new THREE.Quaternion();
 
 
-const CABIN_SKETCH_URL = '/fonts/CabinSketch-Regular.ttf';
+const CABIN_SKETCH_URL = '/fonts/PortfolioZh.ttf';
 
-const PictureContent = ({ imagePath, imagePaintedPath, width, height, isPainted }) => {
+const PictureContent = ({ imagePath, imagePaintedPath, width, height, isPainted, preserveColors = false }) => {
     const texture = useTexture(imagePath);
     // Render nothing if no painted path, but we still call the hook unconditionally to respect hook rules
     const paintedTexture = useTexture(imagePaintedPath || imagePath);
@@ -36,23 +36,24 @@ const PictureContent = ({ imagePath, imagePaintedPath, width, height, isPainted 
     const materialRef = useRef();
 
     useEffect(() => {
+        if (preserveColors) {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.needsUpdate = true;
+            paintedTexture.colorSpace = THREE.SRGBColorSpace;
+            paintedTexture.needsUpdate = true;
+        }
+    }, [texture, paintedTexture, preserveColors]);
+
+    useEffect(() => {
         if (!materialRef.current || !imagePaintedPath) return;
 
-        if (isPainted) {
-            gsap.to(materialRef.current, {
-                uProgress: 1.0,
-                duration: 0.8,
-                ease: 'power2.out',
-                overwrite: true
-            });
-        } else {
-            gsap.to(materialRef.current, {
-                uProgress: 0.0,
-                duration: 0.5,
-                ease: 'power2.out',
-                overwrite: true
-            });
-        }
+        const animation = gsap.to(materialRef.current, {
+            uProgress: isPainted ? 1.0 : 0.0,
+            duration: isPainted ? 0.8 : 0.5,
+            ease: 'power2.out',
+            overwrite: true
+        });
+        return () => animation.kill();
     }, [isPainted, imagePaintedPath]);
 
     return (
@@ -60,7 +61,8 @@ const PictureContent = ({ imagePath, imagePaintedPath, width, height, isPainted 
             {imagePaintedPath && (
                 <mesh position={[0, 0, -0.001]}>
                     <planeGeometry args={[width, height]} />
-                    <meshBasicMaterial color="#e0e0e0"
+                    <meshBasicMaterial color={preserveColors ? "#ffffff" : "#e0e0e0"}
+                        toneMapped={!preserveColors}
                         map={paintedTexture}
                         transparent={true}
                         alphaTest={0.5}
@@ -72,7 +74,8 @@ const PictureContent = ({ imagePath, imagePaintedPath, width, height, isPainted 
             <mesh position={[0, 0, 0]}>
                 <planeGeometry args={[width, height]} />
                 {imagePaintedPath ? (
-                    <revealMaterial color="#e0e0e0"
+                    <revealMaterial color={preserveColors ? "#ffffff" : "#e0e0e0"}
+                        toneMapped={!preserveColors}
                         ref={materialRef}
                         map={texture}
                         transparent={true}
@@ -82,7 +85,8 @@ const PictureContent = ({ imagePath, imagePaintedPath, width, height, isPainted 
                         uProgress={0.0}
                     />
                 ) : (
-                    <meshBasicMaterial color="#e0e0e0"
+                    <meshBasicMaterial color={preserveColors ? "#ffffff" : "#e0e0e0"}
+                        toneMapped={!preserveColors}
                         map={texture}
                         transparent={true}
                         alphaTest={0.1} // KLUCZOWE: Naprawia przezroczystość (wycina tło)
@@ -119,8 +123,6 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
 
     // Sprawdzamy czy to urządzenie dotykowe (telefon/tablet) by całkowicie wyłączyć efekt hover i podnieść wydajność
     const isTouch = useMemo(() => isTouchDevice(), []);
-    // Zostawiamy też stary mechanizm żeby odłączyć na ekstremalnie wąskich ekranach w ogóle inspected
-    const isMobile = viewport.width < 5 || viewport.aspect < 0.8 || isTouch;
 
     // Kiedy komponent znika, na wszelki wypadek wyłączamy override
     useEffect(() => {
@@ -133,9 +135,9 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
     }, [isInspected, setCameraOverride]);
 
     useEffect(() => {
-        if (isHovered && !isMobile) document.body.style.cursor = 'pointer';
+        if (isHovered && !isTouch) document.body.style.cursor = 'pointer';
         else document.body.style.cursor = 'auto';
-    }, [isHovered, isMobile]);
+    }, [isHovered, isTouch]);
 
     useEffect(() => {
         if (!frameMaterialRef.current) return;
@@ -193,7 +195,9 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
             const baseDistance = 1.3;
             // Im mniejszy aspekt (węższy ekran), tym większa odległość
             const aspectOffset = Math.max(0, 1.8 - viewport.aspect) * 1.5;
-            const distance = Math.min(2.8, Math.max(1.5, baseDistance + aspectOffset));
+            const halfFov = THREE.MathUtils.degToRad(camera.getEffectiveFOV() / 2);
+            const artworkDistance = Math.max(frame.height, frame.width / camera.aspect) * 1.2 / (2 * Math.tan(halfFov)) * (isTouch ? 1.25 : 1.5);
+            const distance = Math.max(artworkDistance, Math.min(2.8, Math.max(1.5, baseDistance + aspectOffset)));
 
             // Punkt tuż przed kamerą (zwiększony dynamicznie - im więcej, tym dalej)
             tempPos.copy(camera.position).add(tempCamDir.multiplyScalar(distance));
@@ -202,8 +206,8 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
             tempRot.copy(camera.quaternion);
 
             // Efekt "3D Karty" na podstawie myszki
-            const tiltX = -state.pointer.y * 0.3;
-            const tiltY = state.pointer.x * 0.3;
+            const tiltX = isTouch ? 0 : -state.pointer.y * 0.3;
+            const tiltY = isTouch ? 0 : state.pointer.x * 0.3;
             tempEuler.set(tiltX, tiltY, 0);
             tempQuat.setFromEuler(tempEuler);
 
@@ -219,7 +223,7 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
         }
 
         // Płynna interpolacja (lerp/slerp) w każdym oknie renderowania
-        const factor = delta * 6;
+        const factor = 1 - Math.exp(-delta * 6);
         groupRef.current.position.lerp(tempPos, factor);
         groupRef.current.quaternion.slerp(tempRot, factor);
         groupRef.current.scale.lerp(tempScale, factor);
@@ -236,7 +240,6 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
                 position={[0, 0, 0.05]}
                 onClick={(e) => {
                     e.stopPropagation();
-                    if (isMobile) return; // Całkowite wyłączenie na mobile
                     setIsInspected((prev) => {
                         const next = !prev;
                         if (setCameraOverride) setCameraOverride(next); // Blokowanie / odblokowanie poruszania kamerą
@@ -247,7 +250,7 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
                 }}
                 onPointerEnter={(e) => {
                     e.stopPropagation();
-                    if (!isInspected && !isMobile) setIsHovered(true);
+                    if (!isInspected && !isTouch) setIsHovered(true);
                 }}
                 onPointerLeave={(e) => {
                     e.stopPropagation();
@@ -259,7 +262,7 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
             </mesh>
 
             {/* RAMKA PAINTED (behind sketch) */}
-            {!isTouch && (
+            {!frame.includesFrame && (
                 <mesh ref={framePaintedRef} position={[0, 0, -0.001]} scale={[0.98, 0.98, 1]}>
                     <planeGeometry args={[frame.width, frame.height]} />
                     <meshBasicMaterial color="#e0e0e0"
@@ -273,6 +276,7 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
             )}
 
             {/* RAMKA SKETCH OVERLAY (front) */}
+            {!frame.includesFrame && (
             <mesh position={[0, 0, 0]}>
                 <planeGeometry args={[frame.width, frame.height]} />
                 <revealMaterial color="#e0e0e0"
@@ -285,15 +289,17 @@ const InspectableFrame = ({ frame, wallX, frameTexture, framePaintedTexture, CAB
                     uProgress={0.0}
                 />
             </mesh>
+            )}
 
             {/* OBRAZEK WEWNĄTRZ */}
             {frame.image && (
                 <PictureContent
                     imagePath={frame.image}
-                    imagePaintedPath={!isTouch ? frame.imagePainted : null}
+                    imagePaintedPath={!isTouch || frame.includesFrame ? frame.imagePainted : null}
                     width={frame.imageWidth || frame.width * 0.7}
                     height={frame.imageHeight || frame.height * 0.7}
-                    isPainted={isHovered || isInspected}
+                    isPainted={frame.includesFrame ? isInspected : isHovered || isInspected}
+                    preserveColors={frame.includesFrame}
                 />
             )}
 
@@ -401,27 +407,27 @@ const CorridorDecorations = ({ segmentLength, zOffset, corridorWidth = 4, corrid
             z: zOffset - 40,         // Między Studio a About (relZ -34 do -46)
             side: 'right',
             width: 2.5,
-            height: 2.5 / 1.785,
+            height: 2.5 * 720 / 1476,
             y: 0.25,
             id: 'frame-3',
-            signature: "Empty canvas!\nWant your art here?\nContact me!",
-            signatureX: 0,
-            signatureY: 0,
-            signatureSize: 0.12,
-            signatureColor: '#333333'
+            image: '/textures/corridor/sharingan-artwork-sketch.webp',
+            imagePainted: '/textures/corridor/sharingan-artwork.webp',
+            imageWidth: 2.5,
+            imageHeight: 2.5 * 720 / 1476,
+            includesFrame: true
         },
         {
             z: zOffset - 55,         // Między About a Connect (relZ -50 do -60)
             side: 'left',
             width: 2.5,
-            height: 2.5 / 1.785,
+            height: 2.5 * 896 / 1190,
             y: 0.35,
             id: 'frame-4',
-            signature: "Empty canvas!\nWant your art here?\nContact me!",
-            signatureX: 0,
-            signatureY: 0,
-            signatureSize: 0.12,
-            signatureColor: '#333333'
+            image: '/textures/corridor/sharingan-artwork-2-sketch.webp',
+            imagePainted: '/textures/corridor/sharingan-artwork-2.webp',
+            imageWidth: 2.5,
+            imageHeight: 2.5 * 896 / 1190,
+            includesFrame: true
         },
     ], [zOffset]);
 

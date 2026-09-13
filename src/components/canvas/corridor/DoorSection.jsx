@@ -827,7 +827,7 @@ const DoorSection = ({
         if (hoverAudioRef.current && !isHovered) {
             const vol = isMuted ? 0 : DOOR_AUDIO_SETTINGS.hoverVolume * globalVolume;
             hoverAudioRef.current.setVolume(vol);
-            
+
             // Only play if AudioContext is already running to avoid console warnings
             // Browsers block audio until a user click, and hover is not always enough.
             if (hoverAudioRef.current.isPlaying) hoverAudioRef.current.stop();
@@ -1072,73 +1072,73 @@ const DoorSection = ({
                         {label === 'THE GALLERY' && (
                             <group position={[0, 0, 0.01]}>
                                 <Text
-                                    font="/fonts/CabinSketch-Bold.ttf"
+                                    font="/fonts/PortfolioZh.ttf"
                                     fontSize={0.25}
                                     color="#111111"
                                     anchorX="center"
                                     anchorY="bottom"
                                     position={[0, -0.02, 0]}
                                 >
-                                    THE
+
                                 </Text>
                                 <Text
-                                    font="/fonts/CabinSketch-Bold.ttf"
+                                    font="/fonts/PortfolioZh.ttf"
                                     fontSize={0.25}
                                     color="#111111"
                                     anchorX="center"
                                     anchorY="top"
                                     position={[0, +0.02, 0]}
                                 >
-                                    GALLERY
+                                    项目展示
                                 </Text>
                             </group>
                         )}
                         {label === 'THE STUDIO' && (
                             <group position={[0, 0, 0.01]}>
                                 <Text
-                                    font="/fonts/CabinSketch-Bold.ttf"
+                                    font="/fonts/PortfolioZh.ttf"
                                     fontSize={0.25}
                                     color="#111111"
                                     anchorX="center"
                                     anchorY="bottom"
                                     position={[0, -0.02, 0]}
                                 >
-                                    THE
+
                                 </Text>
                                 <Text
-                                    font="/fonts/CabinSketch-Bold.ttf"
+                                    font="/fonts/PortfolioZh.ttf"
                                     fontSize={0.25}
                                     color="#111111"
                                     anchorX="center"
                                     anchorY="top"
                                     position={[0, +0.03, 0]}
                                 >
-                                    STUDIO
+                                    技能工作室
                                 </Text>
                             </group>
                         )}
                         {label === 'THE ABOUT' && (
                             <Text
-                                font="/fonts/CabinSketch-Bold.ttf"
+                                font="/fonts/PortfolioZh.ttf"
                                 fontSize={0.30}
                                 color="#111111"
                                 anchorX="center"
                                 anchorY="middle"
                                 position={[0, 0, 0.01]}
                             >
-                                ABOUT
+                                关于我
                             </Text>
                         )}
                         {label === "LET'S CONNECT" && (
                             <Text
-                                font="/fonts/CabinSketch-Bold.ttf"
+                                font="/fonts/PortfolioZh.ttf"
                                 fontSize={0.25}
                                 color="#111111"
                                 anchorX="center"
                                 anchorY="middle"
                                 position={[0, 0, 0.01]}
                             >
-                                CONTACT
+                                联系我
                             </Text>
                         )}
                     </group>

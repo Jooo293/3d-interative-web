@@ -100,7 +100,7 @@ for (const link of document.querySelectorAll('[data-pending]')) {
   link.addEventListener('click', event => {
     event.preventDefault();
     clearTimeout(noticeTimer);
-    notice.textContent = `${link.dataset.pending} — link coming soon.`;
+    notice.textContent = `${link.dataset.pending}：链接暂未设置。`;
     notice.classList.add('is-visible');
     noticeTimer = setTimeout(dismissNotice, 3500);
   });

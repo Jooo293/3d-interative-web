@@ -29,7 +29,7 @@ function serveStaticStartPage() {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [serveStaticStartPage(), react(), viteCompression(), generateSeoHtml()],
+  plugins: [serveStaticStartPage(), react(), viteCompression(), ...(process.env.VITE_SANITY_PROJECT_ID ? [generateSeoHtml()] : [])],
   server: {
     proxy: {
       '/sanity-cdn': {

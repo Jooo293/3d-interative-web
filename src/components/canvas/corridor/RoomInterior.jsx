@@ -20,10 +20,10 @@ const ROOM_CONFIG = {
 };
 
 const SUBTITLES = {
-    'THE GALLERY': 'Explore my creative projects',
-    'THE STUDIO': 'Watch behind the scenes',
-    'DEV DIARY': 'My development journey',
-    "LET'S CONNECT": 'Get in touch with me'
+    'THE GALLERY': '查看我的项目与研究成果',
+    'THE STUDIO': '了解我的技能与工作方法',
+    'DEV DIARY': '我的成长经历',
+    "LET'S CONNECT": '欢迎与我联系'
 };
 
 // Naturalny kafelek listwy: 1582x94px przy wysokości 0.15 → ~2.524 units szerokości
@@ -269,7 +269,7 @@ const RoomInterior = memo(({ label, showRoom, onReady, isExiting }) => {
                             />
 
                             {/* Title */}
-                            <Text
+                            <Text font="/fonts/PortfolioZh.ttf"
                                 position={[0, 2, -roomDepth / 2 + 2]}
                                 fontSize={4}
                                 color="#1a1a1a"
@@ -282,7 +282,7 @@ const RoomInterior = memo(({ label, showRoom, onReady, isExiting }) => {
                             </Text>
 
                             {/* Subtitle */}
-                            <Text
+                            <Text font="/fonts/PortfolioZh.ttf"
                                 position={[0, -1, -roomDepth / 2 + 2]}
                                 fontSize={0.8}
                                 color="#666666"

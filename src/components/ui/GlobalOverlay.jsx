@@ -3,8 +3,33 @@ import { useScene } from '../../context/SceneContext';
 import gsap from 'gsap';
 import { TextPlugin } from 'gsap/TextPlugin';
 import '../../styles/GlobalOverlay.scss';
+import PortfolioMediaPlayer from './PortfolioMediaPlayer';
 
 gsap.registerPlugin(TextPlugin);
+
+const DocumentLinks = ({ documents }) => documents?.length ? (
+    <ul className="portfolio-document-links" aria-label="项目文档">
+        {documents.map(file => <li key={file.url}>
+            <span>{file.title}（{file.format}）</span>
+            <div className="portfolio-document-actions">
+                {file.format === 'PDF' && <a href={file.url} target="_blank" rel="noopener noreferrer" aria-label={`阅读${file.title}`}>在线阅读</a>}
+                <a href={file.url} download={file.filename} aria-label={`下载${file.title}`}>下载文档</a>
+            </div>
+        </li>)}
+    </ul>
+) : null;
+
+const MiniProgramCode = ({ miniProgram }) => miniProgram ? (
+    <figure className="portfolio-mini-program">
+        <a href={miniProgram.code} target="_blank" rel="noopener noreferrer" aria-label={`查看${miniProgram.title}小程序码原图`}>
+            <img src={miniProgram.code} width="260" height="260" alt={`${miniProgram.title}微信小程序码`} />
+        </a>
+        <figcaption>
+            <span>{miniProgram.title} · 微信小程序</span>
+            <a href={miniProgram.code} download={miniProgram.filename}>保存小程序码</a>
+        </figcaption>
+    </figure>
+) : null;
 
 const GlobalOverlay = () => {
     const { overlayContent, closeOverlay } = useScene();
@@ -51,7 +76,7 @@ const GlobalOverlay = () => {
     // DUMMY RENDER MOCK - Pre-render the heaviest layout (certificate_grid) invisibly 
     // to calculate CSS layout costs on page load, NOT on first click.
     const dummyGridContent = {
-        title: 'Loading...',
+        title: "正在加载…",
         layout: 'certificate_grid',
         items: [
             { label: '', date: '', image: '' },
@@ -71,7 +96,30 @@ const GlobalOverlay = () => {
 const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
     if (!content) return null;
 
-    const label = content.platformConfig?.label || 'Content';
+    const label = content.platformConfig?.label || "内容";
+    const isPortfolio = content.layout === 'portfolio_sections';
+    const isCentered = isPortfolio || content.layout === 'certificate_grid';
+    const closeButtonRef = useRef(null);
+    const dialogRef = useRef(null);
+    useEffect(() => {
+        if (!isPortfolio || !isOpen) return;
+        const previousFocus = document.activeElement;
+        closeButtonRef.current?.focus();
+        const handleKey = event => {
+            if (event.key === 'Escape') onClose();
+            if (event.key === 'Tab') {
+                const targets = [...dialogRef.current.querySelectorAll('button, a[href], [tabindex="0"]')];
+                const first = targets[0], last = targets[targets.length - 1];
+                if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => {
+            window.removeEventListener('keydown', handleKey);
+            previousFocus?.focus();
+        };
+    }, [isPortfolio, isOpen, onClose]);
 
     // GSAP TextPlugin typing effect for description
     const descriptionRef = useRef(null);
@@ -237,7 +285,7 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
     });
 
     // --- KONFIGURACJA MASKI (SPOTLIGHT - CZARNA DZIURA) ---
-    const maskStyle = (content.layout === 'certificate_grid') ? {
+    const maskStyle = isCentered ? {
         maskImage: 'none',
         WebkitMaskImage: 'none'
     } : isMobile ? {
@@ -309,10 +357,10 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                         flexDirection: 'column',
                         gap: '1.2rem',
                         fontFamily: "'Cabin Sketch', cursive", // Hand-drawn vibe
-                        pointerEvents: 'auto', // Re-enable clicks for the card
+                        pointerEvents: isOpen ? 'auto' : 'none',
                         ...cardStyle,
                         // Override styles for grid layout to be centered and wider
-                        ...(content.layout === 'certificate_grid' ? {
+                        ...(isCentered ? {
                             // Make it centered and wide on desktop
                             width: isMobile ? '95vw' : 'clamp(300px, 90vw, 1200px)',
                             height: 'clamp(500px, 85vh, 900px)',
@@ -322,9 +370,16 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                             right: 'auto',
                             bottom: 'auto',
                             transform: isOpen ? 'translate(-50%, -50%)' : 'translate(-50%, 100%)',
-                        } : {})
+                        } : {}),
+                        ...(isPortfolio ? { width: isMobile ? '94vw' : content.image ? 'min(92vw, 1040px)' : 'min(90vw, 760px)', height: 'auto', boxSizing: 'border-box' } : {})
                     }}
-                    className="studio-paper-card"
+                    ref={dialogRef}
+                    inert={!isOpen}
+                    className={`studio-paper-card${isPortfolio ? ' portfolio-result-card' : ''}`}
+                    role={isPortfolio ? 'dialog' : undefined}
+                    aria-modal={isPortfolio && isOpen ? true : undefined}
+                    aria-label={isPortfolio ? content.title : undefined}
+                    aria-hidden={isPortfolio ? !isOpen : undefined}
                     onClick={(e) => e.stopPropagation()} // Prevent closing when clicking card
                 >
                     {/* SVG Border Overlay for Torn Paper */}
@@ -375,7 +430,7 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                         ...getStaggerStyle(100)
                     }}>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                            <span style={{
+                            {!isPortfolio && <span style={{
                                 textTransform: 'uppercase',
                                 fontSize: '0.7rem',
                                 fontWeight: 700,
@@ -383,7 +438,7 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                                 color: '#666'
                             }}>
                                 {label}
-                            </span>
+                            </span>}
                             <h2 style={{
                                 fontSize: '1.8rem',
                                 margin: 0,
@@ -396,9 +451,10 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                         </div>
 
                         <button
+                            ref={closeButtonRef}
                             onClick={onClose}
                             className="studio-close-btn"
-                            aria-label="Close"
+                            aria-label="关闭"
                         >
                             <svg viewBox="0 0 24 24">
                                 <path d="M18 6L6 18M6 6l12 12" />
@@ -407,7 +463,34 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                     </div>
 
                     {/* === LAYOUT: CERTIFICATE GRID === */}
-                    {content.layout === 'certificate_grid' ? (
+                    {isPortfolio ? (
+                        <div className={`portfolio-result-content${content.image ? ' has-artwork' : ''}`} ref={scrollContainerRef}>
+                            {content.image && <figure className="portfolio-artwork">
+                                <a href={content.image} target="_blank" rel="noopener noreferrer" aria-label={`查看${content.title}原图`}>
+                                    <img src={content.image} alt={content.title} />
+                                </a>
+                                <figcaption><a href={content.image} target="_blank" rel="noopener noreferrer">查看原图</a></figcaption>
+                            </figure>}
+                            <div>
+                            {content.icon && <img className="portfolio-result-icon" src={content.icon} alt="" />}
+                            {content.media && isOpen && <PortfolioMediaPlayer key={content.id} media={content.media} title={content.title} />}
+                            {content.sections.map(section => (
+                                <section className="portfolio-result-section" key={section.title}>
+                                    <h3>{section.title}</h3>
+                                    <p>{section.description}</p>
+                                    {section.points?.length > 0 && <ul>{section.points.map(point => <li key={point}>{point}</li>)}</ul>}
+                                    <DocumentLinks documents={section.documents} />
+                                    {section.url && <a href={section.url} target="_blank" rel="noopener noreferrer" aria-label={`访问${section.title}`}>访问作品</a>}
+                                    <MiniProgramCode miniProgram={section.miniProgram} />
+                                </section>
+                            ))}
+                            {content.url && <a href={content.url} target="_blank" rel="noopener noreferrer">访问作品</a>}
+                            {content.document && <a href={content.document} target="_blank" rel="noopener noreferrer">阅读文档</a>}
+                            <DocumentLinks documents={content.documents} />
+                            <MiniProgramCode miniProgram={content.miniProgram} />
+                            </div>
+                        </div>
+                    ) : content.layout === 'certificate_grid' ? (
                         <div style={{ position: 'relative', flex: 1, minHeight: 0 }}>
                             <div
                                 ref={scrollContainerRef}
@@ -509,7 +592,7 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                                 ...getStaggerStyle(200)
                             }}>
                                 <strong>{content.date}</strong>
-                                {content.views && <span>{content.views} views</span>}
+                                {content.views && <span>{content.views} 次浏览</span>}
                             </div>
 
                             {/* Description */}
@@ -538,7 +621,7 @@ const ContentCard = ({ content, isOpen, onClose, isMobile }) => {
                                     rel="noopener noreferrer"
                                     className="studio-action-button"
                                 >
-                                    Open Link ↗
+                                    打开链接 ↗
                                 </a>
                             </div>
                         </>

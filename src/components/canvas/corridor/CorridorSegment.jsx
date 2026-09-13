@@ -129,7 +129,7 @@ const CorridorSegment = ({
                 <Doodles />
 
                 {/* Segment number (debug - can remove later) */}
-                <Text
+                <Text font="/fonts/PortfolioZh.ttf"
                     position={[1.7, 1.4, 0.3]}
                     fontSize={0.12}
                     color="#ccc"

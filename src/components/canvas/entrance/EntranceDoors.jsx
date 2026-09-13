@@ -9,7 +9,7 @@ import { useAchievements } from '../../../context/AchievementsContext';
 import { isTouchDevice } from '../../../utils/deviceDetect';
 
 // Use same font as App.jsx preload (Inter) - works reliably
-const FONT_URL = 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff';
+const FONT_URL = '/fonts/PortfolioZh.ttf';
 
 
 
@@ -105,16 +105,16 @@ const EntranceDoors = ({
 
     // Rubber Duck Debugging Quotes
     const duckQuotes = [
-        "Have you tried console.log()?",
-        "Did you clear the cache?",
-        "It works on my machine! 🤷",
-        "Have you turned it off and on again?",
-        "Maybe it's a CSS issue?",
-        "Check for missing semicolons!",
-        "Did you read the error message?",
-        "Have you tried Stack Overflow?",
-        "Is it plugged in?",
-        "Works in production! 🚀",
+        "试过查看运行日志吗？",
+        "清理过缓存了吗？",
+        "在我的电脑上可以运行！",
+        "试过重新启动吗？",
+        "也许是样式出了问题？",
+        "检查一下有没有漏掉分号！",
+        "看过错误提示了吗？",
+        "试过查找技术问答吗？",
+        "电源接好了吗？",
+        "上线运行成功！",
     ];
 
     // Bug Click Handler
@@ -935,12 +935,12 @@ const EntranceDoors = ({
                 color="#1a1a1a"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/CabinSketch-Bold.ttf"
+                font="/fonts/PortfolioZh.ttf"
                 outlineWidth={0.015}
                 outlineColor="#ffffff"
                 clipRect={[-1, -0.5, -1 + (clipProgress * 2.5), 0.5]}
             >
-                BUG FIXED!
+                修复完成！
             </Text>
 
 

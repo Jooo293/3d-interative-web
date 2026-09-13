@@ -3,6 +3,8 @@
  * Everything loads during the initial preloader for zero stutter when entering rooms.
  */
 
+import { CONTENT_DATA } from '../components/canvas/rooms/Studio/contentData';
+
 // Entrance scene textures
 export const ENTRANCE_TEXTURES = [
     // Core
@@ -86,6 +88,10 @@ export const CORRIDOR_TEXTURES = [
     '/textures/corridor/szafkaprzodgora.webp',
     '/textures/corridor/rysuneknaobraz1.webp',
     '/textures/corridor/rysuneknaobrazek3.webp',
+    '/textures/corridor/sharingan-artwork.webp',
+    '/textures/corridor/sharingan-artwork-sketch.webp',
+    '/textures/corridor/sharingan-artwork-2.webp',
+    '/textures/corridor/sharingan-artwork-2-sketch.webp',
     // DoorSection extras
     '/textures/corridor/strzalka.webp',
     '/textures/corridor/doors/door_back.webp',
@@ -158,6 +164,10 @@ export const GALLERY_TEXTURES_VERSIONED = [
 ];
 
 export const GALLERY_TEXTURES = [
+    ...['hexaco-mini-program', 'rainfall-website', 'campus-food-project', 'quantitative-research'].flatMap(id => [
+        `/textures/gallery/portfolio/${id}.webp`,
+        `/textures/gallery/portfolio/${id}-painted.webp`,
+    ]),
     ...GALLERY_TEXTURES_BASE,
     ...GALLERY_TEXTURES_VERSIONED.flatMap(name => [
         `/textures/gallery/${name}.webp`,
@@ -190,6 +200,9 @@ export const ABOUT_TEXTURES = [
     '/textures/about/SOTM_painted.webp',
     '/textures/about/button.webp',
     '/textures/about/button_painted.webp',
+    '/textures/about/results/research.svg',
+    '/textures/about/results/management.svg',
+    '/textures/about/results/projects.svg',
     // Award images (for overlay)
     '/textures/about/SOTDAYYOUNGMULTICSSWINNER.webp',
     '/textures/about/SOTDAYYOUNGMULTIGSAP.webp',
@@ -201,26 +214,10 @@ export const ABOUT_TEXTURES = [
     // Skill balloons - large
     '/textures/about/reactduzybalon.webp',
     '/textures/about/reactduzybalon_painted.webp',
-    '/textures/about/threejsduzybalon.webp',
-    '/textures/about/threejsduzybalon_painted.webp',
-    '/textures/about/GSAPduzybalon.webp',
-    '/textures/about/GSAPduzybalon_painted.webp',
-    // Skill balloons - medium
-    '/textures/about/JSSREDNIBALON.webp',
-    '/textures/about/JSSREDNIBALON_painted.webp',
-    '/textures/about/csssrednibalon.webp',
-    '/textures/about/csssrednibalon_painted.webp',
-    '/textures/about/nextjssrednibalon.webp',
-    '/textures/about/nextjssrednibalon_painted.webp',
-    // Skill balloons - small
-    '/textures/about/htmlmalybalon.webp',
-    '/textures/about/htmlmalybalon_painted.webp',
-    '/textures/about/gitmalybalon.webp',
-    '/textures/about/gitmalybalon_painted.webp',
-    '/textures/about/figmamalybalon.webp',
-    '/textures/about/figmamalybalon_painted.webp',
-    '/textures/about/firebasemalybalon.webp',
-    '/textures/about/firebasemalybalon_painted.webp',
+    ...['spss', 'stata', 'codex', 'workbuddy', 'python', 'office', 'midjourney', 'cet6', 'interview'].flatMap(skill => [
+        `/textures/about/skills/${skill}.webp`,
+        `/textures/about/skills/${skill}-painted.webp`,
+    ]),
     // Clouds
     '/textures/clouds/1131c3eb-dfae-423f-924b-ff39d8ccd6dc.webp',
     '/textures/clouds/254b8ec8-d6f7-4275-956f-7bab65b2ce2d.webp',
@@ -234,6 +231,7 @@ export const ABOUT_TEXTURES = [
 
 // Studio Room textures (loaded via useLoader(TextureLoader))
 export const STUDIO_TEXTURES = [
+    ...CONTENT_DATA.flatMap(item => [item.frontTexture, item.paintedFrontTexture]),
     // Monitor (blog)
     '/textures/studio/monitor_front.webp',
     '/textures/studio/monitor_front_painted.webp',

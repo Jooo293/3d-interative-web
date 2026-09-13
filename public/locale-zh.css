@@ -1,0 +1,26 @@
+@font-face {
+  font-family: 'Portfolio Zh';
+  src: url('/fonts/PortfolioZh.ttf') format('truetype');
+  font-weight: 100 900;
+  font-display: swap;
+}
+html:lang(zh-CN) body,
+html:lang(zh-CN) button,
+html:lang(zh-CN) input,
+html:lang(zh-CN) textarea,
+html:lang(zh-CN) h1,
+html:lang(zh-CN) h2,
+html:lang(zh-CN) h3,
+html:lang(zh-CN) h4,
+html:lang(zh-CN) p,
+html:lang(zh-CN) span,
+html:lang(zh-CN) a,
+html:lang(zh-CN) .map-room-label,
+html:lang(zh-CN) .achievement-title,
+html:lang(zh-CN) .achievement-label {
+  font-family: 'Portfolio Zh', 'Microsoft YaHei', sans-serif !important;
+  letter-spacing: 0 !important;
+  overflow-wrap: anywhere;
+}
+html:lang(zh-CN) .map-room-label { font-size: 22px; line-height: 1.35; }
+html:lang(zh-CN) .studio-close-btn { flex-shrink: 0; }

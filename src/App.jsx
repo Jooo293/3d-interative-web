@@ -75,7 +75,7 @@ if (isLowEnd) {
   filteredLoader.forEach(path => useLoader.preload(TextureLoader, path));
 }
 
-const FONT_URL = 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeA.woff';
+const FONT_URL = '/fonts/PortfolioZh.ttf';
 
 // Helper component to handle global audio enable on interaction
 const GlobalAudioEnabler = () => {

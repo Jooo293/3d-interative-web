@@ -7,7 +7,7 @@ import SkyChunk, { CHUNK_LENGTH, ROOM_Z } from './SkyChunk';
 import { useScene } from '../../../../context/SceneContext';
 import '../../shaders/RevealBasicMaterial'; // Registers brush-stroke reveal for BasicMaterial
 import { isTouchDevice } from '../../../../utils/deviceDetect';
-import { useAwards } from '../../../../hooks/useSanityData';
+import { PRACTICE_RESULTS } from '../../../../config/practiceResults';
 
 // Reusable Vector3 to avoid allocations in event handlers
 const _tempVec3 = new THREE.Vector3();
@@ -132,9 +132,9 @@ const AwardButton = ({ onClick, texture, paintedTexture, width, height, position
                 color="#1a1a1a"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/CabinSketch-Bold.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                VIEW
+                查看
             </Text>
         </group>
     );
@@ -350,9 +350,9 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
                 color="#1a1a1a"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/RubikScribble-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                TOMASZ SZMAJDA
+                李白
             </Text>
 
             {/* Subtitle - Brand (spreads right) */}
@@ -363,9 +363,9 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
                 color="#4a4a4a"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/CabinSketch-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                (ITOM)
+                人力资源与行政管理
             </Text>
 
             {/* Avatar on cloud - floating + spreads up-left */}
@@ -387,10 +387,10 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
                 color="#555555"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/CabinSketch-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
                 fontStyle="italic"
             >
-                "Crafting digital experiences
+                以细致梳理复杂事务，
             </Text>
 
             {/* Motto - Line 2 (spreads left) */}
@@ -401,73 +401,24 @@ const IntroMilestone = ({ z, scrollProgressRef }) => {
                 color="#555555"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/CabinSketch-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
                 fontStyle="italic"
             >
-                that push creative boundaries"
+                用数据发现改进的可能。
             </Text>
         </group>
     );
 };
 
-/**
- * MOCK DATA FOR AWARDS
- */
-const AWARDS_DATA = {
-    featured: {
-        id: 'award-featured',
-        layout: 'certificate_grid',
-        title: 'Featured Projects Collection',
-        items: [
-            { label: 'Featured - Awwwards', date: 'May 2025', image: '/textures/about/FEATURED.webp', url: 'https://awwwards.com' },
-            { label: 'Featured - CSS Design Awards', date: 'June 2025', image: '/textures/about/FEATURED.webp', url: 'https://cssdesignawards.com' },
-            { label: 'Featured - The FWA', date: 'July 2025', image: '/textures/about/FEATURED.webp', url: 'https://thefwa.com' },
-            { label: 'Featured - Behance', date: 'August 2025', image: '/textures/about/FEATURED.webp', url: 'https://behance.net' },
-        ],
-        platformConfig: {
-            label: 'HONOR',
-            color: '#1a1a1a',
-            icon: '⭐'
-        }
-    },
-    sotd: {
-        id: 'award-sotd',
-        layout: 'certificate_grid',
-        title: 'Site of the Day Awards',
-        items: [
-            { label: 'SOTD - GSAP', date: 'February 13, 2026', image: '/textures/about/SOTDAYYOUNGMULTIGSAP.webp', url: 'https://www.linkedin.com/posts/greensock_site-of-the-day-young-multi-this-immersive-activity-7427567524940017664-zU2n?utm_source=share&utm_medium=member_desktop&rcm=ACoAAE3TV6UBqXoaJXUN5-1s3ij6SQJwTRAcbCM' },
-            { label: 'SOTD - CSS Winner', date: 'January 24, 2026', image: '/textures/about/SOTDAYYOUNGMULTICSSWINNER.webp', url: 'https://www.csswinner.com/details/young-multi-official-experience/19045' },
-            { label: 'SOTD - Orpetron', date: 'January 29, 2026', image: '/textures/about/SOTDAYYOUNGMULTIORPETRON.webp', url: 'https://orpetron.com/sites/young-multi/' },
-            { label: 'SOTD - Design Nominess', date: 'February 17, 2026', image: '/textures/about/SOTDAYYOUNGMULTIDESIGNNOMINESS.webp', url: 'https://www.designnominees.com/sites/young-multi' }
-        ],
-        platformConfig: {
-            label: 'AWARD',
-            color: '#1a1a1a',
-            icon: '🏆'
-        }
-    },
-    sotm: {
-        id: 'award-sotm',
-        layout: 'certificate_grid',
-        title: 'Site of the Month Awards',
-        items: [],
-        platformConfig: {
-            label: 'AWARD',
-            color: '#1a1a1a',
-            icon: '📅'
-        }
-    },
-    other: {
-        id: 'award-other',
-        layout: 'certificate_grid',
-        title: 'Other Awards',
-        items: [],
-        platformConfig: {
-            label: 'PRESTIGE',
-            color: '#1a1a1a',
-            icon: '👑'
-        }
-    }
+const ResultIcon = ({ src }) => {
+    const texture = useLoader(THREE.TextureLoader, src);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return (
+        <mesh position={[0, 0, 0.03]}>
+            <planeGeometry args={[0.9, 0.9]} />
+            <meshBasicMaterial map={texture} transparent depthWrite={false} />
+        </mesh>
+    );
 };
 
 /**
@@ -475,10 +426,6 @@ const AWARDS_DATA = {
  * SOTY (center), SOTD, SOTM, Featured (behind)
  */
 const AwardsMilestone = ({ z, scrollProgressRef }) => {
-    // Pobieranie danych nagród z Sanity (z fallbackiem)
-    const sanityAwards = useAwards();
-    const awardsData = sanityAwards || AWARDS_DATA;
-
     const { camera, viewport } = useThree();
     const isTouch = isTouchDevice();
     const { openOverlay } = useScene();
@@ -614,7 +561,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
     });
 
     return (
-        <group ref={groupRef} position={[0, 2, z]}>
+        <group ref={groupRef} position={[0, 2, z]} scale={isTouch ? 0.5 : 1}>
             {/* Title */}
             <Text
                 position={[0, 4, 0]}
@@ -622,9 +569,9 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 color="#1a1a1a"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/RubikScribble-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                AWARDS
+                实践与成果
             </Text>
 
             {/* === SOTD (behind SOTY, rendered second) === */}
@@ -655,7 +602,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 <AwardButton
                     onClick={(e) => {
                         e.stopPropagation();
-                        openOverlay(awardsData.sotd);
+                        openOverlay(PRACTICE_RESULTS.research);
                     }}
                     texture={buttonTexture}
                     paintedTexture={buttonPaintedTexture}
@@ -671,21 +618,11 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     color="#1a1a1a"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
+                    font="/fonts/PortfolioZh.ttf"
                 >
-                    SOTD
+                    研究成果
                 </Text>
-                {/* AWARD COUNT */}
-                <Text
-                    position={[-0.05, 0, 0.01]}
-                    fontSize={0.8}
-                    color="#1a1a1a"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
-                >
-                    {awardsData.sotd.items.length}
-                </Text>
+                <ResultIcon src={PRACTICE_RESULTS.research.icon} />
             </group>
 
             {/* === SOTM (behind SOTY, rendered third) === */}
@@ -716,7 +653,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 <AwardButton
                     onClick={(e) => {
                         e.stopPropagation();
-                        openOverlay(awardsData.sotm);
+                        openOverlay(PRACTICE_RESULTS.projects);
                     }}
                     texture={buttonTexture}
                     paintedTexture={buttonPaintedTexture}
@@ -732,21 +669,11 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     color="#1a1a1a"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
+                    font="/fonts/PortfolioZh.ttf"
                 >
-                    SOTM
+                    项目成果
                 </Text>
-                {/* AWARD COUNT */}
-                <Text
-                    position={[-0.05, 0, 0.01]}
-                    fontSize={0.8}
-                    color="#1a1a1a"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
-                >
-                    {awardsData.sotm.items.length}
-                </Text>
+                <ResultIcon src={PRACTICE_RESULTS.projects.icon} />
             </group>
 
             {/* === SOTY (front, center, rendered LAST = always on top) === */}
@@ -776,7 +703,7 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                 <AwardButton
                     onClick={(e) => {
                         e.stopPropagation();
-                        openOverlay(awardsData.other);
+                        openOverlay(PRACTICE_RESULTS.management);
                     }}
                     texture={buttonTexture}
                     paintedTexture={buttonPaintedTexture}
@@ -792,21 +719,11 @@ const AwardsMilestone = ({ z, scrollProgressRef }) => {
                     color="#1a1a1a"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
+                    font="/fonts/PortfolioZh.ttf"
                 >
-                    OTHER
+                    管理实践
                 </Text>
-                {/* AWARD COUNT */}
-                <Text
-                    position={[-0.05, 0, 0.01]}
-                    fontSize={0.8}
-                    color="#1a1a1a"
-                    anchorX="center"
-                    anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
-                >
-                    {awardsData.other.items.length}
-                </Text>
+                <ResultIcon src={PRACTICE_RESULTS.management.icon} />
             </group>
         </group>
     );
@@ -901,9 +818,9 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                 color="#1a1a1a"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/RubikScribble-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                JOURNEY
+                成长经历
             </Text>
 
             {/* Subtitle */}
@@ -913,9 +830,9 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                 color="#555555"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/CabinSketch-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                My path so far...
+                一步一步，积累与成长
             </Text>
 
             {/* === UO ISLAND (Left) === */}
@@ -935,9 +852,9 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                     color="#1a1a1a"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
+                    font="/fonts/PortfolioZh.ttf"
                 >
-                    2025-NOW
+                    2025年至今
                 </Text>
             </group>
 
@@ -958,9 +875,9 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
                     color="#1a1a1a"
                     anchorX="center"
                     anchorY="middle"
-                    font="/fonts/CabinSketch-Bold.ttf"
+                    font="/fonts/PortfolioZh.ttf"
                 >
-                    2023-NOW
+                    2023年至今
                 </Text>
             </group>
         </group>
@@ -975,22 +892,22 @@ const JourneyMilestone = ({ z, scrollProgressRef }) => {
 // Balloon configuration: size category, texture path, position offset
 // === EDYTUJ WYSOKOŚĆ TUTAJ (zmień wartość 'y' dla każdego balona) ===
 const BALLOON_CONFIG = [
-    // Large balloons (main skills) - front and center
     { texture: '/textures/about/reactduzybalon.webp', paintedTexture: '/textures/about/reactduzybalon_painted.webp', label: 'React', size: 'large', x: -2.5, y: 2, z: 0.3, phase: 0 },
-    { texture: '/textures/about/threejsduzybalon.webp', paintedTexture: '/textures/about/threejsduzybalon_painted.webp', label: 'Three.js', size: 'large', x: 2.5, y: 2.5, z: 0.2, phase: 1.5 },
-    { texture: '/textures/about/GSAPduzybalon.webp', paintedTexture: '/textures/about/GSAPduzybalon_painted.webp', label: 'GSAP', size: 'large', x: 0, y: 3, z: 0.5, phase: 3 },
-
-    // Medium balloons - scattered around
-    { texture: '/textures/about/JSSREDNIBALON.webp', paintedTexture: '/textures/about/JSSREDNIBALON_painted.webp', label: 'JavaScript', size: 'medium', x: -4, y: 1, z: -0.3, phase: 0.8 },
-    { texture: '/textures/about/csssrednibalon.webp', paintedTexture: '/textures/about/csssrednibalon_painted.webp', label: 'CSS', size: 'medium', x: 4, y: 1.5, z: -0.2, phase: 2.2 },
-    { texture: '/textures/about/nextjssrednibalon.webp', paintedTexture: '/textures/about/nextjssrednibalon_painted.webp', label: 'Next.js', size: 'medium', x: 0, y: 0.5, z: -0.4, phase: 4 },
-
-    // Small balloons - background accents
-    { texture: '/textures/about/htmlmalybalon.webp', paintedTexture: '/textures/about/htmlmalybalon_painted.webp', label: 'HTML', size: 'small', x: -5.5, y: 2.5, z: -0.8, phase: 1.2 },
-    { texture: '/textures/about/gitmalybalon.webp', paintedTexture: '/textures/about/gitmalybalon_painted.webp', label: 'Git', size: 'small', x: 5.5, y: 3, z: -0.7, phase: 2.8 },
-    { texture: '/textures/about/figmamalybalon.webp', paintedTexture: '/textures/about/figmamalybalon_painted.webp', label: 'Figma', size: 'small', x: -3, y: 4.5, z: -0.5, phase: 3.5 },
-    { texture: '/textures/about/firebasemalybalon.webp', paintedTexture: '/textures/about/firebasemalybalon_painted.webp', label: 'Firebase', size: 'small', x: 3.5, y: 4, z: -0.6, phase: 4.5 },
-];
+    { skill: 'spss', label: 'SPSS', size: 'large', x: 2.5, y: 2.5, z: 0.2, phase: 1.5 },
+    { skill: 'stata', label: 'Stata', size: 'large', x: 0, y: 3, z: 0.5, phase: 3 },
+    { skill: 'codex', label: 'Codex', size: 'medium', x: -4, y: 1, z: -0.3, phase: 0.8 },
+    { skill: 'workbuddy', label: 'workbuddy', size: 'medium', x: 4, y: 1.5, z: -0.2, phase: 2.2 },
+    { skill: 'python', label: 'Python', size: 'medium', x: 0, y: 0.5, z: -0.4, phase: 4 },
+    { skill: 'office', label: 'Office', size: 'small', x: -5.5, y: 2.5, z: -0.8, phase: 1.2 },
+    { skill: 'midjourney', label: 'Midjourney', size: 'small', x: 5.5, y: 3, z: -0.7, phase: 2.8 },
+    { skill: 'cet6', label: 'CET6', size: 'small', x: -3, y: 4.5, z: -0.5, phase: 3.5 },
+    { skill: 'interview', label: '问卷访谈', size: 'small', x: 3.5, y: 4, z: -0.6, phase: 4.5 },
+].map(config => config.skill ? {
+    ...config,
+    texture: `/textures/about/skills/${config.skill}.webp`,
+    paintedTexture: `/textures/about/skills/${config.skill}-painted.webp`,
+    aspect: 1,
+} : config);
 
 // Size multipliers for balloon categories
 const SIZE_MULTIPLIERS = {
@@ -1008,6 +925,24 @@ const SkillBalloon = ({ config, revealFactorRef, spreadFactorRef, timeRef }) => 
     const paintedTexture = useLoader(THREE.TextureLoader, paintedTextureUrl);
     texture.colorSpace = THREE.SRGBColorSpace;
     paintedTexture.colorSpace = THREE.SRGBColorSpace;
+
+    // Ignore transparent texture margins so adjacent balloons cannot steal clicks.
+    const balloonRaycast = useMemo(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = 128;
+        const context = canvas.getContext('2d');
+        context.drawImage(texture.image, 0, 0, 128, 128);
+        const pixels = context.getImageData(0, 0, 128, 128).data;
+        return function (raycaster, intersections) {
+            const hits = [];
+            THREE.Mesh.prototype.raycast.call(this, raycaster, hits);
+            for (const hit of hits) {
+                const x = Math.min(127, Math.max(0, Math.floor(hit.uv.x * 128)));
+                const y = Math.min(127, Math.max(0, Math.floor((1 - hit.uv.y) * 128)));
+                if (pixels[(y * 128 + x) * 4 + 3] >= 128) intersections.push(hit);
+            }
+        };
+    }, [texture]);
 
     const [isPopping, setIsPopping] = useState(false);
     const [hovered, setHovered] = useState(false);
@@ -1044,7 +979,7 @@ const SkillBalloon = ({ config, revealFactorRef, spreadFactorRef, timeRef }) => 
     };
     
     const filename = config.texture.split('/').pop();
-    const aspect = legacyAspects[filename] || legacyAspects['default_small_medium'];
+    const aspect = config.aspect || legacyAspects[filename] || legacyAspects['default_small_medium'];
     const baseHeight = SIZE_MULTIPLIERS[config.size];
 
     const outerGroupRef = useRef();
@@ -1268,6 +1203,7 @@ const SkillBalloon = ({ config, revealFactorRef, spreadFactorRef, timeRef }) => 
 
                 {/* Sketch balloon (front) with brush-stroke reveal */}
                 <mesh
+                    raycast={balloonRaycast}
                     position={[0, 0, 0.001]}
                     onClick={(e) => {
                         e.stopPropagation();
@@ -1304,11 +1240,11 @@ const SkillBalloon = ({ config, revealFactorRef, spreadFactorRef, timeRef }) => 
                     <Text
                         ref={textRef}
                         position={[0, 0, 0.1]}
-                        fontSize={baseHeight * 0.4}
+                        fontSize={baseHeight * Math.min(0.4, 1.6 / config.label.length)}
                         color="#1a1a1a"
                         anchorX="center"
                         anchorY="middle"
-                        font="/fonts/RubikScribble-Regular.ttf"
+                        font="/fonts/PortfolioZh.ttf"
                         fillOpacity={0}
                         outlineWidth={0.02}
                         outlineColor="#fff"
@@ -1389,7 +1325,7 @@ const SkillsMilestone = ({ z, scrollProgressRef }) => {
     });
 
     return (
-        <group ref={groupRef} position={[0, 0, z]}>
+        <group ref={groupRef} position={[0, 0, z]} scale={isTouch ? 0.55 : 1}>
             {/* Title */}
             <Text
                 position={[0, 6, 0.5]}
@@ -1397,9 +1333,9 @@ const SkillsMilestone = ({ z, scrollProgressRef }) => {
                 color="#1a1a1a"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/RubikScribble-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                SKILLS
+                专业技能
             </Text>
 
             {/* Subtitle */}
@@ -1409,9 +1345,9 @@ const SkillsMilestone = ({ z, scrollProgressRef }) => {
                 color="#555555"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/CabinSketch-Regular.ttf"
+                font="/fonts/PortfolioZh.ttf"
             >
-                Technologies I love working with
+                常用工具与工作方法
             </Text>
 
             {/* === FLOATING BALLOONS === */}

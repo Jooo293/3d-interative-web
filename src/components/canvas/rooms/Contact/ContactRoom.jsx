@@ -249,7 +249,7 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
 
     const handleMailSelect = () => {
         // Awaryjne przekierowanie mailto:
-        window.location.href = 'mailto:tomszma12@gmail.com';
+        window.location.href = 'mailto:2346794652@qq.com';
 
         /* 
         setShowSelection(false);
@@ -398,43 +398,43 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
             </group>
 
             {/* 🛢️ SOCIAL BARRELS (Floating in water) */}
-            {/* LINKEDIN */}
+            {/* 抖音 */}
             <SocialBarrel
                 position={isMobile ? [-1.2, 0.5, -10] : [-3, 0.5, -10]}
                 rotation={[0, 0.2, 0]}
                 texturePath="/textures/contact/beczka.webp"
-                label="LINKEDIN"
-                onClick={() => window.open('https://www.linkedin.com/in/tomasz-szmajda-259337305/', '_blank')}
+                label="抖音"
+                onClick={() => window.open('https://www.douyin.com/search/NBA_Official?type=user', '_blank', 'noopener,noreferrer')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* GITHUB */}
+            {/* B站 */}
             <SocialBarrel
                 position={isMobile ? [-1.5, -0.3, -7] : [-5, -0.3, -8]}
                 rotation={[0, 0.3, 0]}
                 texturePath="/textures/contact/beczka.webp"
-                label="GITHUB"
-                onClick={() => window.open('https://github.com/ITomPoland', '_blank')}
+                label="B站"
+                onClick={() => window.open('https://space.bilibili.com/1683463886', '_blank', 'noopener,noreferrer')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* FACEBOOK */}
+            {/* 推特 */}
             <SocialBarrel
                 position={isMobile ? [1.2, 0.5, -10] : [3, 0.5, -10]}
                 rotation={[0, -0.2, 0]}
                 texturePath="/textures/contact/beczka.webp"
-                label="FACEBOOK"
-                onClick={() => window.open('https://www.facebook.com/people/ITom/61586563487664/', '_blank')}
+                label="推特"
+                onClick={() => window.open('https://x.com/NASA', '_blank', 'noopener,noreferrer')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
-            {/* INSTAGRAM */}
+            {/* YouTube */}
             <SocialBarrel
                 position={isMobile ? [1.5, -0.3, -7] : [5, -0.3, -8]}
                 rotation={[0, -0.3, 0]}
                 texturePath="/textures/contact/beczka.webp"
-                label="INSTAGRAM"
-                onClick={() => window.open('https://www.instagram.com/itom.dev/', '_blank')}
+                label="YouTube"
+                onClick={() => window.open('https://www.youtube.com/@hasbropulse', '_blank', 'noopener,noreferrer')}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}
             />
@@ -443,7 +443,7 @@ const ContactRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
                 position={isMobile ? [0, -0.7, -6] : [0, -0.7, -7]}
                 rotation={[0, 0, 0]}
                 texturePath="/textures/contact/beczka.webp"
-                label="MESSAGE"
+                label="邮件"
                 onClick={handleMailSelect}
                 paintOnBeforeCompile={onBeforeCompile}
                 paintUniforms={uniformsData}

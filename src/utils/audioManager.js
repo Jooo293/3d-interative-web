@@ -5,6 +5,26 @@
 let bgMusicAudio = null;
 let isMuted = false;
 let bgMusicStarted = false;
+let suspensionCount = 0;
+let resumeAfterSuspension = false;
+
+export const suspendBackgroundMusic = () => {
+    if (suspensionCount === 0) {
+        resumeAfterSuspension = Boolean(bgMusicAudio && !bgMusicAudio.paused);
+        bgMusicAudio?.pause();
+    }
+    suspensionCount++;
+    let released = false;
+    return () => {
+        if (released) return;
+        released = true;
+        suspensionCount--;
+        if (suspensionCount === 0 && resumeAfterSuspension) {
+            resumeAfterSuspension = false;
+            bgMusicAudio?.play().catch(() => {});
+        }
+    };
+};
 
 // Initialize background music
 export const initAudio = () => {
@@ -30,6 +50,7 @@ export const initAudio = () => {
 export const playBackgroundMusic = () => {
     initAudio();
     bgMusicStarted = true;
+    if (suspensionCount > 0) { resumeAfterSuspension = true; return; }
     if (bgMusicAudio && bgMusicAudio.paused) {
         // Only play if not muted and it's currently paused
         bgMusicAudio.play().catch((err) => {
@@ -39,6 +60,7 @@ export const playBackgroundMusic = () => {
 };
 
 export const pauseBackgroundMusic = () => {
+    resumeAfterSuspension = false;
     if (bgMusicAudio && !bgMusicAudio.paused) {
         bgMusicAudio.pause();
     }
@@ -64,7 +86,7 @@ export const setMusicVolume = (vol) => {
         }
 
         // Ensure playback continues if we unmute, ONLY if the music has actually been requested to start
-        if (vol > 0 && bgMusicAudio.paused && bgMusicStarted) {
+        if (vol > 0 && bgMusicAudio.paused && bgMusicStarted && suspensionCount === 0) {
             bgMusicAudio.play().catch(e => console.warn(e));
         }
     }

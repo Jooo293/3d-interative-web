@@ -2,14 +2,13 @@ import { useRef, useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { useFrame, useThree, useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
-import { CONTENT_DATA, PLATFORM_CONFIG, getLatestContent } from './contentData';
+import { CONTENT_DATA, PLATFORM_CONFIG } from './contentData';
 import { useScene } from '../../../../context/SceneContext';
 import { useAchievements } from '../../../../context/AchievementsContext';
 import { TextureLoader } from 'three';
 import FloatingCodeParticles from './FloatingCodeParticles';
 import { PositionalAudio } from '@react-three/drei';
 import { useAudio } from '../../../../context/AudioManager';
-import { useStudioContent } from '../../../../hooks/useSanityData';
 import '../../shaders/RevealMaterial';
 import { isTouchDevice } from '../../../../utils/deviceDetect';
 import { usePaintMaterial } from '../Gallery/usePaintMaterial';
@@ -104,12 +103,10 @@ const StudioRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
 
     // Achievements Context
     const { showTutorial, unlockAchievement, hidePopup } = useAchievements();
-    const { globalVolume, isMuted } = useAudio();
-    const effectiveVolume = isMuted ? 0 : AUDIO_SETTINGS.volume * globalVolume;
+    const { globalVolume, isMuted, mediaPlaying } = useAudio();
+    const effectiveVolume = isMuted || mediaPlaying ? 0 : AUDIO_SETTINGS.volume * globalVolume;
 
-    // Pobieranie danych z Sanity.io (fallback do starych danych)
-    const sanityContent = useStudioContent();
-    const activeContent = sanityContent || CONTENT_DATA;
+    const activeContent = CONTENT_DATA;
 
     const audioRef = useRef();
     useEffect(() => {
@@ -154,7 +151,8 @@ const StudioRoom = ({ showRoom, onReady, isExiting, isWarmup }) => {
 
     const latestContent = useMemo(() => {
         if (!activeContent || activeContent.length === 0) return null;
-        return [...activeContent].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+        const datedContent = activeContent.filter(item => item.date);
+        return datedContent.length ? [...datedContent].sort((a, b) => new Date(b.date) - new Date(a.date))[0] : null;
     }, [activeContent]);
 
     // Monitor Y offsets for falling animation (mutable)

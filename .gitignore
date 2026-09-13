@@ -27,3 +27,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local preparation files and unused package-manager metadata
+tmp/
+pnpm-lock.yaml
+pnpm-workspace.yaml

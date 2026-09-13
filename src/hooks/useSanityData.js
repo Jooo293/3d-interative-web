@@ -6,7 +6,7 @@ import { TextureLoader } from 'three';
 
 // Flaga bezpieczeństwa: Jeśli użytkownik nie wpisał jeszcze Project ID, 
 // hooki zwrócą null, co pozwoli na załadowanie danych hardcodowanych (fallback).
-export const isSanityConfigured = sanityClient.config().projectId !== 'YOUR_PROJECT_ID';
+export const isSanityConfigured = Boolean(import.meta.env.VITE_SANITY_PROJECT_ID);
 
 // Globalny cache dla danych z Sanity
 const cache = {
@@ -139,23 +139,23 @@ export function loadSanityData() {
                     sotd: {
                         id: 'award-sotd',
                         layout: 'certificate_grid',
-                        title: 'Site of the Day Awards',
+                        title: "每日优秀网站奖",
                         items: mapItems(awardsData.filter(a => a.category === 'sotd')),
-                        platformConfig: { label: 'ACHIEVEMENT', color: '#1a1a1a', icon: '🏆' }
+                        platformConfig: { label: "探索成就", color: '#1a1a1a', icon: '🏆' }
                     },
                     sotm: {
                         id: 'award-sotm',
                         layout: 'certificate_grid',
-                        title: 'Site of the Month Awards',
+                        title: "月度优秀网站奖",
                         items: mapItems(awardsData.filter(a => a.category === 'sotm')),
-                        platformConfig: { label: 'AWARD', color: '#1a1a1a', icon: '📅' }
+                        platformConfig: { label: "奖项", color: '#1a1a1a', icon: '📅' }
                     },
                     other: {
                         id: 'award-other',
                         layout: 'certificate_grid',
-                        title: 'Other Awards',
+                        title: "其他奖项",
                         items: mapItems(awardsData.filter(a => a.category === 'other')),
-                        platformConfig: { label: 'PRESTIGE', color: '#1a1a1a', icon: '👑' }
+                        platformConfig: { label: "荣誉", color: '#1a1a1a', icon: '👑' }
                     }
                 };
             }
