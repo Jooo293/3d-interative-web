@@ -59,10 +59,16 @@ export function useDocumentMeta() {
     const { currentRoom, teleportTo, hasEntered } = useScene();
     const isHandlingPopState = useRef(false);
     const lastPushedRoom = useRef(undefined); // Track what we last pushed to avoid duplicates
+    const initialUrlRoom = useRef(getInitialRoomFromUrl()); // Preserve deep links during initial scene loading
 
     // Update document meta and URL when room changes
     useEffect(() => {
-        const roomKey = currentRoom === null ? 'null' : currentRoom;
+        const isInitialDeepLink =
+            lastPushedRoom.current === undefined &&
+            currentRoom === null &&
+            initialUrlRoom.current !== null;
+        const effectiveRoom = isInitialDeepLink ? initialUrlRoom.current : currentRoom;
+        const roomKey = effectiveRoom === null ? 'null' : effectiveRoom;
         const meta = ROOM_META[roomKey] || ROOM_META['null'];
 
         // Update the page title
@@ -91,14 +97,14 @@ export function useDocumentMeta() {
         }
 
         // Push to browser history (only if not handling a popstate event and room actually changed)
-        if (!isHandlingPopState.current && lastPushedRoom.current !== currentRoom) {
+        if (!isHandlingPopState.current && lastPushedRoom.current !== effectiveRoom) {
             // Use replaceState for the very first load, pushState for subsequent navigations
             if (lastPushedRoom.current === undefined) {
-                window.history.replaceState({ room: currentRoom }, '', meta.path);
+                window.history.replaceState({ room: effectiveRoom }, '', meta.path);
             } else {
-                window.history.pushState({ room: currentRoom }, '', meta.path);
+                window.history.pushState({ room: effectiveRoom }, '', meta.path);
             }
-            lastPushedRoom.current = currentRoom;
+            lastPushedRoom.current = effectiveRoom;
         }
 
         isHandlingPopState.current = false;
