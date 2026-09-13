@@ -13,14 +13,14 @@ const entries = [
     {
         id: 'lyria-slowest-release', platform: 'music', title: 'THE SLOWEST RELEASE',
         media: { src: '/media/lyria/the-slowest-release.mp4', poster: '/media/lyria/the-slowest-release-cover.webp' },
-        description: '极其舒缓、冥想般的环境氛围。音乐节奏缓慢，主要由带有空灵混响的柔和原声钢琴，以及宽广而温暖的合成器铺垫构成，没有打击乐或强烈的低音，营造出一种极其宁静、祥和且充满空间感的纯粹听觉体验。',
-        sectionTitle: '冥想氛围', points: ['使用 Lyria 制作', '柔和原声钢琴、空灵混响与温暖合成器铺垫', '缓慢节奏，无打击乐或强烈低音'],
+        description: '极其舒缓、冥想般的环境氛围。音乐节奏缓慢，主要由带有空灵混响的柔和原声钢琴，以及宽广而温暖的合成器铺垫构成，营造出一种极其宁静、祥和且充满空间感的纯粹听觉体验。',
+        sectionTitle: '冥想氛围', points: ['使用 Lyria 制作', '柔和原声钢琴、空灵混响与温暖合成器铺垫', '缓慢节奏'],
     },
     {
         id: 'lyria-geometry-storm', platform: 'music', title: 'GEOMETRY OF THE STORM',
         media: { src: '/media/lyria/germetry-of-the-storm.mp4', poster: '/media/lyria/germetry-of-the-storm-cover.webp' },
-        description: '以舒缓清新的现代古典与氛围音乐（Modern Classical / Ambient）为主调，融合柔和的原声钢琴与深情的小提琴旋律，辅以微弱灵动的电子粒子音效与空灵的弦乐铺底。整首音乐节奏缓慢、空间感极强，既体现雨水的自然流动与惬意，也贴合数据可视化界面的科技感与高级质感。',
-        sectionTitle: '现代古典与氛围音乐', points: ['使用 Lyria 制作', '原声钢琴、小提琴、电子粒子音效与弦乐铺底', '雨水意象与数据可视化的听觉氛围'],
+        description: '以舒缓清新的现代古典与氛围音乐（Modern Classical / Ambient）为主调，融合柔和的原声钢琴与深情的小提琴旋律，辅以微弱灵动的电子粒子音效与空灵的弦乐铺底。整首音乐节奏缓慢、空间感极强。',
+        sectionTitle: '现代古典与氛围音乐', points: ['使用 Lyria 制作', '原声钢琴、小提琴、电子粒子音效与弦乐铺底'],
     },
     {
         id: 'campus-plan', platform: 'research', title: '悦味之家',
